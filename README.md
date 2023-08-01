@@ -4,4 +4,7 @@
 ```pip install -e .```
 
 ## Run app
-```flask run app --flaskr```
+*First time*
+```flask --app webGHT init-db```
+
+```flask --app webGHT run --debug```
