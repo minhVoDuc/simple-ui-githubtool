@@ -1,5 +1,5 @@
 [project]
-name = "web-ght"
+name = "webGHT"
 version = "1.0.0"
 description = "The web UI for github organization management tools."
 dependencies = [
@@ -12,9 +12,9 @@ dependencies = [
 requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+# [tool.pytest.ini_options]
+# testpaths = ["tests"]
 
-[tool.coverage.run]
-branch = true
-source = ["flaskr"]
+# [tool.coverage.run]
+# branch = true
+# source = ["flaskr"]
