@@ -1,28 +1,24 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Posts{% endblock %}</h1>
+  <h1>{% block title %}Home{% endblock %}</h1>
   {% if g.user %}
-    <a class="action" href="{{ url_for('tool.create') }}">New</a>
+    <form method="post">
+      <div class="input-group mb-3">
+        <span class="input-group-text">Github Token</span>
+        <input type="text" id="token" name="token" class="form-control" placeholder="{{ request.form['token'] or cred['token'] }}">
+        <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
+      </div>
+    </form>
+  {% else %}
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-info">
+        {{ message }}
+      </div>
+    {% endfor %}
   {% endif %}
 {% endblock %}
 
 {% block content %}
-  {% for post in posts %}
-    <article class="post">
-      <header>
-        <div>
-          <h1>{{ post['title'] }}</h1>
-          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
-        {% if g.user['id'] == post['author_id'] %}
-          <a class="action" href="{{ url_for('tool.update', id=post['id']) }}">Edit</a>
-        {% endif %}
-      </header>
-      <p class="body">{{ post['body'] }}</p>
-    </article>
-    {% if not loop.last %}
-      <hr>
-    {% endif %}
-  {% endfor %}
+  
 {% endblock %}

@@ -70,10 +70,12 @@
     {% block header %}{% endblock %}
   </header>
   {% for message in get_flashed_messages() %}
-    <div class="alert alert-danger alert-dismissible">
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      {{ message }}
-    </div>
+    {% if message.startswith('[ERR]') %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        {{ message }}
+      </div>
+    {% endif %}
   {% endfor %}
   {% block content %}{% endblock %}
 </section>

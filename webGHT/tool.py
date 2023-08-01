@@ -1,5 +1,5 @@
 from flask import (
-  Blueprint, flash, g, redirect, render_template, request, url_for
+  Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.exceptions import abort
 from webGHT.auth import login_required
@@ -8,43 +8,51 @@ from webGHT.db import get_db
 bp = Blueprint('tool', __name__)
 
 # view tools
-@bp.route('/')
+@bp.route('/', methods=('GET', 'POST'))
 def index():
-  db = get_db()
-  posts = db.execute (
-    'SELECT p.id, title, body, created, author_id, username'
-    ' FROm post p JOIN user u ON p.author_id = u.id'
-    ' ORDER BY created DESC'
-  ).fetchall()
-  return render_template('tool/index.html', posts=posts)
-
-# create repo
-@bp.route('/create_repo', methods=('GET', 'POST'))
-@login_required
-def create():
   if request.method == 'POST':
-    title = request.form['title']
-    body = request.form['body']
+    new_token = request.form['token']
     error = None
-    
-    if not title:
-      error = '[ERR] Title is required.'
     
     if error is not None:
       flash(error)
     else:
       db = get_db()
       db.execute(
-        'INSERT INTO post (title, body, author_id)'
-        ' VALUES (?, ?, ?)',
-        (title, body, g.user['id'])
+        'INSERT OR IGNORE INTO cred'
+        ' (user_id, token) VALUES (?, ?)',
+        (session['user_id'], new_token,)
+      )
+      db.execute(
+        ' UPDATE cred'
+        ' SET token=?'
+        ' WHERE user_id=?',
+        (new_token, session['user_id'],)
       )
       db.commit()
-      return redirect(url_for('tool.index'))
+      return redirect(url_for('index'))
+  db = get_db()
+  if g.user is not None:
+    cred = db.execute (
+      'SELECT *'
+      ' FROM cred'
+      ' WHERE user_id = ?',
+      (g.user['id'],)
+    ).fetchone()
+    return render_template('tool/index.html', cred=cred)
+  else:
+    flash('Please login!')
+    return render_template('tool/index.html')
+  
+
+# create repo
+@bp.route('/create_repo', methods=('GET', 'POST'))
+@login_required
+def create_repo():
+  if request.method == 'POST':
+    return redirect(url_for('tool.create_repo'))
   g.active_side_item = 'create_repo'
   return render_template('tool/create_repo.html')
-
-
 
 # support function
 def get_post(id, check_author=True):
