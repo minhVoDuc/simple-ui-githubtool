@@ -32,9 +32,11 @@ hr {
 
 /*----------- self -----------*/
 .authentication {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  margin-top: 5px;
 }
 .content {
   padding-left: 10px;
+  padding-right: 10px;
+  width: 100%;
 }

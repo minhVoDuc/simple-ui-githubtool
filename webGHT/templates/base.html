@@ -13,10 +13,15 @@
   <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
     <span class="fs-4">Github Tools</span>
   </a>
+  {% if not g.user %}
+    <div class="authentication d-grid">
+      <a href="{{ url_for('auth.login') }}" class="btn btn-primary col-12">Login</a>  
+    </div>
+  {% endif %}
   <hr>
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a href="#" class="nav-link active" aria-current="page">
+      <a href="#" class="nav-link text-white" aria-current="page">
         Create Repo
       </a>
     </li>
@@ -41,24 +46,19 @@
       </a>
     </li>
   </ul>
-  <hr>
   {% if g.user %}
+    <hr>
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-        <strong>mdo</strong>
+        <i class="bi bi-person-circle me-2"></i>
+        <strong>{{ g.user['username'] }}</strong>
       </a>
       <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
         <li><a class="dropdown-item" href="#">Settings</a></li>
         <li><a class="dropdown-item" href="#">Profile</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Sign out</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Sign out</a></li>
       </ul>
-    </div>
-  {% else %}
-    <div class="authentication">
-      <a href="{{ url_for('auth.register') }}">Register</a>
-      <a href="{{ url_for('auth.login') }}">Login</a>
     </div>
   {% endif %}
 </div>
@@ -68,7 +68,10 @@
     {% block header %}{% endblock %}
   </header>
   {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
+    <div class="alert alert-danger alert-dismissible">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      {{ message }}
+    </div>
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
