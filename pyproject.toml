@@ -1,0 +1,20 @@
+[project]
+name = "web-ght"
+version = "1.0.0"
+description = "The web UI for github organization management tools."
+dependencies = [
+  "flask",
+  "pytest",
+  "coverage"
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["flaskr"]
