@@ -4,3 +4,27 @@
   <h1>{% block title %}Create Repo{% endblock %}</h1>
 {% endblock %}
 
+{% block content %}
+  <!-- Upload json file -->
+  <div class="input-group mb-3">
+    <input class="form-control add-repolist" type="file" id="repolist" name="repolist" accept=".json" required>
+    <button class="btn btn-success btn-upload-jsonlist">Upload</button>
+  </div>
+
+  <!-- Display list of new repo and create -->
+  <form class="new-repo-list" method="post">
+    <textarea name="json-list" id="json-list" class="form-control mb-3" rows="10" placeholder="Choose file json that contains list of new repo(s)" required></textarea>
+    <div class="input-group mb-3">
+      <span class="input-group-text">Init Readme</span>
+      <div class="input-group-text">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="readme-switch" name="readme-switch" value="yes" checked>
+          <label class="form-check-label" for="readme-switch">Yes</label>
+        </div>
+      </div>
+    </div>
+    <button type="submit" name="btn-create-repo" class="btn btn-primary mb-3">Create Repo</button>
+  </form> 
+  <hr>
+  <h2>Existed Repo</h2>
+{% endblock %}

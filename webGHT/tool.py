@@ -4,6 +4,8 @@ from flask import (
 from werkzeug.exceptions import abort
 from webGHT.auth import login_required
 from webGHT.db import get_db
+from api import github_action
+import json
 
 bp = Blueprint('tool', __name__)
 
@@ -44,13 +46,25 @@ def index():
     flash('Please login!')
     return render_template('tool/index.html')
   
-
 # create repo
+## main 
 @bp.route('/create_repo', methods=('GET', 'POST'))
 @login_required
 def create_repo():
   if request.method == 'POST':
+    new_repos = list(eval('['+request.form['json-list']+']'))
+    containReadme = request.form['readme-switch']
+    print("DEMOO", type(new_repos))
+    for new_repo in new_repos:
+      print(new_repo)
+      if containReadme == 'yes':
+        new_repo['auto_init'] = True
+      else:
+        new_repo['auto_init'] = False
+      log = github_action.create_a_repo(new_repo)
+      print(log)
     return redirect(url_for('tool.create_repo'))
+ 
   g.active_side_item = 'create_repo'
   return render_template('tool/create_repo.html')
 

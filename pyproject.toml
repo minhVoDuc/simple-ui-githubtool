@@ -5,7 +5,8 @@ description = "The web UI for github organization management tools."
 dependencies = [
   "flask",
   "pytest",
-  "coverage"
+  "coverage",
+  "requests"
 ]
 
 [build-system]
