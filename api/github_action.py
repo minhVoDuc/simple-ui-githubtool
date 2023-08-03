@@ -1,7 +1,7 @@
 from api import api_github
 
 webhook_urls = None
-default_teams = None
+default_teams = list()
 default_branches = ['main', 'production']
 
 # setting global variable
@@ -13,6 +13,15 @@ def set_token(token):
 
 def set_org_name(org_name):    
     api_github.org_name = org_name
+    
+def set_default_team(teams):
+    for team in teams:
+        default_teams.append(
+            {
+                'slug': team['team_name'],
+                'permission': team['team_permission']
+            }
+        )
 
 # 1. create repo with config
 def create_a_repo(new_repo):

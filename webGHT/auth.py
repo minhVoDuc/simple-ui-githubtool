@@ -5,6 +5,8 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from webGHT.db import get_db
+from webGHT.get_data import get_org_name, get_token_id, get_def_teams
+from api import github_action
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -68,6 +70,9 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
+            github_action.set_org_name(get_org_name(session['user_id']))
+            github_action.set_token(get_token_id(session['user_id']))
+            github_action.set_default_team(get_def_teams(session['user_id']))
             return redirect(url_for('index'))
         
         flash(error)

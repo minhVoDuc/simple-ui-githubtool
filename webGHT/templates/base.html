@@ -23,7 +23,7 @@
   <hr>
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a href="/create_repo/" class="nav-link {{'active' if g.active_side_item=='create_repo' else 'text-white'}}">
+      <a href="/create_repo" class="nav-link {{'active' if g.active_side_item=='create_repo' else 'text-white'}}">
         Create Repo
       </a>
     </li>
@@ -66,8 +66,7 @@
     </div>
   {% endif %}
 </div>
-
-<section class="content">
+<div class="content">
   <header>
     {% block header %}{% endblock %}
   </header>
@@ -80,4 +79,4 @@
     {% endif %}
   {% endfor %}
   {% block content %}{% endblock %}
-</section>
+</div>

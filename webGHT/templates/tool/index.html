@@ -2,23 +2,70 @@
 
 {% block header %}
   <h1>{% block title %}Home{% endblock %}</h1>
-  {% if g.user %}
-    <form method="post">
-      <div class="input-group mb-3">
-        <span class="input-group-text">Github Token</span>
-        <input type="text" id="token" name="token" class="form-control" placeholder="{{ request.form['token'] or cred['token'] }}">
-        <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
-      </div>
-    </form>
-  {% else %}
-    {% for message in get_flashed_messages() %}
-      <div class="alert alert-info">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
 {% endblock %}
 
 {% block content %}
-  
+  {% if g.user %}
+  <form method="post" action="/change-orgname">
+    <div class="input-group mb-3">
+      <span class="input-group-text">Organization</span>
+      <input type="text" id="orgname" name="orgname" class="form-control" placeholder="{{ request.form['name'] or cred['name'] }}">
+      <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
+    </div>
+  </form>
+  <form method="post" action="/change-token">
+    <div class="input-group mb-3">
+      <span class="input-group-text">Github Token</span>
+      <input type="password" id="token" name="token" class="form-control" placeholder="{{ request.form['token'] or cred['token'] }}">
+      <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
+    </div>
+  </form>
+  <hr>
+  <!--__________________________________________________________________________________________-->
+  <h2>Default Teams</h2>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Team Name</th>
+          <th>Permission</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in teams %}
+          <tr>
+            <td>{{ team.team_name|e }}</td>
+            <td>{{ team.team_permission|e }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <form method="post" action="/add-team">
+      <div class="input-group mb-3">
+        <span class="input-group-text"><strong>Name</strong></span>
+        <input type="text" name="team-name" class="form-control" placeholder="Enter team's name...">
+        <span class="input-group-text"><strong>Permission</strong></span>
+        <input type="text" name="team-permission" class="form-control" placeholder="One of 'pull', 'triage', 'push', 'maintain', 'admin'">
+        <button type="submit" class="btn btn-primary">Add</button>
+      </div>
+    </form>
+  <hr>
+  <!--__________________________________________________________________________________________-->
+  <h2>Default Webhooks</h2>
+    <ul>
+      <li></li>
+    </ul>
+    <form method="post" action="/add-webhook">
+      <div class="input-group mb-3">
+        <input type="text" name="team-name" class="form-control" placeholder="Enter webhook URL...">
+        <button type="submit" class="btn btn-primary">Add</button>
+      </div>
+    </form>
+  <hr>
+  {% else %}
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-info">
+      {{ message }}
+    </div>
+  {% endfor %}
+  {% endif %}
 {% endblock %}

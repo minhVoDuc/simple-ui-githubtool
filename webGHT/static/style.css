@@ -2,7 +2,7 @@
 
 html {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-  background: #eee;
+  background: #994f4f;
   /* padding: 0.2rem; */
   height: 100%;
 }
@@ -11,7 +11,7 @@ body {
   margin: 0 auto;
   background: white;
   display: flex;
-  height: 100%;
+  height: auto;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -32,7 +32,7 @@ a {
 
 hr {
   border: none;
-  border-top: 1px solid lightgray;
+  border-top: 2px solid rgb(184, 184, 184);
 }
 
 textarea {
@@ -41,11 +41,10 @@ textarea {
 /*----------- self -----------*/
 .side-bar {
   position: sticky;
-  align-self: flex-start;
   top: 0;
-  overflow-y: auto;
+  align-self: flex-start;
   width: 280px;
-  height: 100% !important;
+  height: 100vh;
 }
 
 .authentication {
@@ -56,4 +55,4 @@ textarea {
   padding-left: 10px;
   padding-right: 10px;
   width: 100%;
-}
+} 
