@@ -39,7 +39,7 @@
         {% endfor %}
       </tbody>
     </table>
-    <form method="post" action="/add-team">
+    <form method="post" action="/add-def-team">
       <div class="input-group mb-3">
         <span class="input-group-text"><strong>Name</strong></span>
         <input type="text" name="team-name" class="form-control" placeholder="Enter team's name...">
@@ -51,12 +51,14 @@
   <hr>
   <!--__________________________________________________________________________________________-->
   <h2>Default Webhooks</h2>
-    <ul>
-      <li></li>
+    <ul class="list-group list-group-flush">
+      {% for url in webhook_urls %}
+        <li class="list-group-item mb-3 list-group-item-action">{{ url|e }}</li>
+      {% endfor %}
     </ul>
-    <form method="post" action="/add-webhook">
+    <form method="post" action="/add-def-webhook">
       <div class="input-group mb-3">
-        <input type="text" name="team-name" class="form-control" placeholder="Enter webhook URL...">
+        <input type="text" name="webhook" class="form-control" placeholder="Enter webhook URL...">
         <button type="submit" class="btn btn-primary">Add</button>
       </div>
     </form>

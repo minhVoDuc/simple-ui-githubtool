@@ -1,12 +1,12 @@
 from flask import (
   Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
+from webGHT import get_data
 from werkzeug.exceptions import abort
 from webGHT.auth import login_required
 from webGHT.db import get_db
-from webGHT import get_data
+from webGHT.update_api_data import auto_update
 from api import github_action
-
 bp = Blueprint('tool', __name__)
 
 # view tools
@@ -14,12 +14,14 @@ bp = Blueprint('tool', __name__)
 @bp.route('/', methods=('GET', 'POST'))
 def index():  
   '''Display homepage'''
-  if session['user_id'] is not None:
+  if 'user_id' in session:
     org_info = dict()
     org_info['name'] = get_data.get_org_name(session['user_id'])
     org_info['token'] = get_data.get_token_id(session['user_id'])
     teams = get_data.get_def_teams(session['user_id'])
-    return render_template('tool/index.html', cred=org_info, teams=teams)
+    webhook_url = get_data.get_def_webhooks(session['user_id'])
+    auto_update()
+    return render_template('tool/index.html', cred=org_info, teams=teams, webhook_urls=webhook_url)
   else:
     flash('Please login!')
     return render_template('tool/index.html')
@@ -99,7 +101,7 @@ def change_tokenid():
   return redirect(url_for('index'))  
   
 ## change token id
-@bp.route('/add-team', methods=('POST',))
+@bp.route('/add-def-team', methods=('POST',))
 def add_def_team():
   '''Add to default teams'''
   new_team = dict()
@@ -132,7 +134,40 @@ def add_def_team():
         (org_id, new_team['name'], new_team['permission'])
       )
       db.commit()
-      github_action.add_teams([new_team])
+      github_action.set_default_team([new_team])
+  return redirect(url_for('index'))  
+
+## add default webhooks
+@bp.route('/add-def-webhook', methods=('POST',))
+def add_def_webhook():
+  '''Add to default webhooks'''
+  new_webhook = request.form['webhook']
+  error = None
+  db = get_db()
+  
+  if new_webhook == "" or new_webhook is None:
+    error = '[ERR] Webhook URL is empty!'
+  else:
+    checking = db.execute(
+      'SELECT *'
+      ' FROM org_webhooks'
+      ' WHERE webhook_url = ?',
+      (new_webhook,)
+    ).fetchall()
+    if len(checking) > 0:
+      error = '[ERR] This team already existed!'
+    
+    if error is not None:
+      flash(error)
+    else:    
+      org_id = get_data.get_org_id(session['user_id'])
+      db.execute(
+        'INSERT INTO org_webhooks'
+        ' (org_id, webhook_url) VALUES (?, ?)',
+        (org_id, new_webhook)
+      )
+      db.commit()
+      github_action.set_default_webhook([new_webhook])
   return redirect(url_for('index'))  
   
 # create repo
@@ -143,10 +178,12 @@ def create_repo():
   '''Create repo'''
   if request.method == 'POST':
     new_repos = list(eval('['+request.form['json-list']+']'))
-    containReadme = request.form['readme-switch']
-    print("DEMOO", type(new_repos))
+    if 'readme-switch' in request.form:
+      containReadme = request.form['readme-switch']
+    else:
+      containReadme = 'no'
     for new_repo in new_repos:
-      print(new_repo)
+      print(containReadme)
       if containReadme == 'yes':
         new_repo['auto_init'] = True
       else:
@@ -154,23 +191,20 @@ def create_repo():
       log = github_action.create_a_repo(new_repo)
       print(log)
     return redirect(url_for('tool.create_repo'))
- 
+  auto_update()
+  repos = github_action.list_all_repos()
+  print(repos)
   g.active_side_item = 'create_repo'
   return render_template('tool/create_repo.html')
 
-# support function
-def get_post(id, check_author=True):
-  post = get_db().execute(
-    'SELECT p.id, title, body, created, author_id, username'
-    ' FROM post p JOIN user u ON p.author_id = u.id'
-    ' WHERE p.id = ?',
-    (id,)
-  ).fetchone()
-  
-  if post is None:
-    abort(404, f"[ERR] Post id {id} doesn't exist")
-  
-  if check_author and post['author_id'] != g.user['id']:
-    abort(403)
-    
-  return post
+## delete repo
+@bp.route('/clear-all-repo', methods=('POST',))
+def clear_all_repo():
+  '''Clear All Existed Repo'''
+  raw_repos = github_action.list_all_repos()
+  print(raw_repos)
+  repos = [repo['name'] for repo in raw_repos]
+  print(repos)
+  for repo in repos:
+    github_action.api_github.delete_repo(repo)
+  return redirect(url_for('tool.create_repo'))

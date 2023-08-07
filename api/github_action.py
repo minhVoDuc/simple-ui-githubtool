@@ -1,13 +1,29 @@
 from api import api_github
 
-webhook_urls = None
+webhook_urls = list()
 default_teams = list()
 default_branches = ['main', 'production']
 
-# setting global variable
+# relevant function
 def list_all_repos():
     return api_github.list_all_repos()
+
+## check empty
+def is_empty_token():
+    return 'Authorization' not in api_github.headers \
+        or api_github.headers['Authorization'] == ""
+        
+def is_empty_org_name():
+    return api_github.org_name is None \
+        or api_github.org_name == ""
+        
+def is_empty_default_team():
+    return len(default_teams) == 0
     
+def is_empty_webhook():
+    return len(webhook_urls) == 0    
+
+## set global variable
 def set_token(token):    
     api_github.headers['Authorization'] = f'Bearer {token}'    
 
@@ -22,6 +38,9 @@ def set_default_team(teams):
                 'permission': team['team_permission']
             }
         )
+
+def set_default_webhook(urls):
+    webhook_urls.extend(urls)
 
 # 1. create repo with config
 def create_a_repo(new_repo):

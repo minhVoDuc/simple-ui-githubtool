@@ -48,3 +48,17 @@ def get_def_teams(user_id):
     (org_id,)
   ).fetchall()
   return teams
+
+## get default webhook
+def get_def_webhooks(user_id):
+  '''Get default teams'''
+  db = get_db()
+  org_id = get_org_id(user_id)
+  raw_teams = db.execute(
+    'SELECT *'
+    ' FROM org_webhooks'
+    ' WHERE org_id = ?',
+    (org_id,)
+  ).fetchall()
+  teams = [team['webhook_url'] for team in raw_teams]
+  return teams
