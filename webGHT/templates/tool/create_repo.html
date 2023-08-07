@@ -26,5 +26,11 @@
     <button type="submit" name="btn-create-repo" class="btn btn-primary mb-3">Create Repo</button>
   </form> 
   <hr>
+  <!--__________________________________________________________________________________________-->
   <h2>Existed Repo</h2>
+  <hr>
+  <!--__________________________________________________________________________________________-->
+  <form method="post" action="/clear-all-repo">
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">Delete Repo</button>
+  </form>
 {% endblock %}
