@@ -5,6 +5,31 @@
 {% endblock %}
 
 {% block content %}
+  <form method="post" class="d-flex justify-content-between align-items-center" action="/clear-all-repo">
+    <span><h4 class="d-inline">Current Repo</h4></span>
+    <button type="submit" class="btn btn-danger float-right" onclick="return confirm('Are you sure?');">Delete All</button>
+  </form>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Owner</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for repo in repos%}
+        <tr>
+          <td>{{ repo.id|e }}</td>
+          <td>{{ repo.name|e }}</td>
+          <td>{{ repo.owner|e }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <hr>
+  <!--__________________________________________________________________________________________-->
+  <h4>Upload file json to create new repo</h4>
   <!-- Upload json file -->
   <div class="input-group mb-3">
     <input class="form-control add-repolist" type="file" id="repolist" name="repolist" accept=".json" required>
@@ -23,14 +48,28 @@
         </div>
       </div>
     </div>
+    <div id="create-repo-addition" class="d-block">
+      <div class="input-group mb-3">
+        <span class="input-group-text">Create branch `production`</span>
+        <div class="input-group-text">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="prod-switch" name="prod-switch" value="yes" checked>
+            <label class="form-check-label" for="prod-switch">Yes</label>
+          </div>
+        </div>
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Apply branch protection rule</span>
+        <div class="input-group-text">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="protect-switch" name="protect-switch" value="yes" checked>
+            <label class="form-check-label" for="protect-switch">Yes</label>
+          </div>
+        </div>
+      </div>
+    </div>
     <button type="submit" name="btn-create-repo" class="btn btn-primary mb-3">Create Repo</button>
   </form> 
   <hr>
   <!--__________________________________________________________________________________________-->
-  <h2>Existed Repo</h2>
-  <hr>
-  <!--__________________________________________________________________________________________-->
-  <form method="post" action="/clear-all-repo">
-    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">Delete Repo</button>
-  </form>
 {% endblock %}

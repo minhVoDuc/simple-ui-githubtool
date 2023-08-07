@@ -178,24 +178,42 @@ def create_repo():
   '''Create repo'''
   if request.method == 'POST':
     new_repos = list(eval('['+request.form['json-list']+']'))
+    opt_create_prod = False
+    opt_apply_p_rule = False
     if 'readme-switch' in request.form:
       containReadme = request.form['readme-switch']
+      if request.form['prod-switch'] == 'yes':
+        opt_create_prod = True
+      if request.form['protect-switch'] == 'yes':
+        opt_apply_p_rule = True
     else:
       containReadme = 'no'
     for new_repo in new_repos:
-      print(containReadme)
+      repo_name = new_repo['name']
       if containReadme == 'yes':
         new_repo['auto_init'] = True
       else:
         new_repo['auto_init'] = False
       log = github_action.create_a_repo(new_repo)
       print(log)
+      # create branch production (if yes)
+      if opt_create_prod:
+        log = github_action.create_branch(repo_name)
+        print(log)
+      # apply branch protection rule (if yes)
+      if opt_apply_p_rule:
+        branches = github_action.api_github.list_all_branches(repo_name)
+        repo_info = {
+          'name': repo_name,
+          'branches': branches
+        }
+        github_action.apply_branch_rule(repo_info)
     return redirect(url_for('tool.create_repo'))
   auto_update()
   repos = github_action.list_all_repos()
   print(repos)
   g.active_side_item = 'create_repo'
-  return render_template('tool/create_repo.html')
+  return render_template('tool/create_repo.html', repos=repos)
 
 ## delete repo
 @bp.route('/clear-all-repo', methods=('POST',))

@@ -137,12 +137,12 @@ def list_lacking_rule_repos(repos_name):
     return lacking_repos
 
 def apply_branch_rule(repo):
-    # repo_name = repo['name']
-    # branches = repo['branches']
-    branches = ['main', 'production']
+    repo_name = repo['name']
+    branches = repo['branches']
+    # branches = ['main', 'production']
     for branch in branches:
         msg = f'   |--`{branch}`: updated '
-        status_code = api_github.apply_p_rule(repo, branch)
+        status_code = api_github.apply_p_rule(repo_name, branch)
         if (status_code == 200):
             msg += 'successfully!'
         else:
