@@ -58,15 +58,15 @@ def create_a_repo(new_repo):
     return msg
 
 # 2. Create branch `production`
-def list_lacking_branch_repos(repos_name):
+def list_lacking_branch_repos(repos_name, branch):
     lacking_repos = list()
     for repo_name in repos_name:
-        status_code = api_github.get_branch(repo_name, 'production')
+        status_code = api_github.get_branch(repo_name, branch)
         if (status_code == 404):
             lacking_repos.append(repo_name)
     return lacking_repos
 
-def create_branch(repo_name):    
+def create_branch(repo_name, branch):    
     revision_id = api_github.find_revision(repo_name)
     if (revision_id == "REPO_EMPTY"):
         print(f"Warning: Repo {repo_name} is empty. Creating branch `main`...")
@@ -74,15 +74,16 @@ def create_branch(repo_name):
         commit_sha = api_github.create_init_commit(repo_name, tree_sha)
         status_code = api_github.create_init_branch(repo_name, commit_sha)
         if (status_code == 200):
-            print("   |-- Branch `main` created!")
+            print(f"   |-- Branch `{branch}` created!")
             revision_id = api_github.find_revision(repo_name)
         else:
-            return "   |-- Error: Branch `main` cannot created!"
-    status_code = api_github.create_branch(repo_name, 'production', revision_id) 
-    if (status_code == 201):
-        return "   |-- Branch `production` created!"
-    else:
-        return "   |-- Error: Branch `production` cannot created!"  
+            return f"   |-- Error: Branch `{branch}` cannot created!"
+    if (branch != 'main'):
+        status_code = api_github.create_branch(repo_name, branch, revision_id) 
+        if (status_code == 201):
+            return f"   |-- Branch `{branch}` created!"
+        else:
+            return f"   |-- Error: Branch `{branch}` cannot created!"  
 
 # 3. Add teams
 def list_teams(repo_name):

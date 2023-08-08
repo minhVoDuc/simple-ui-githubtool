@@ -182,9 +182,9 @@ def create_repo():
     opt_apply_p_rule = False
     if 'readme-switch' in request.form:
       containReadme = request.form['readme-switch']
-      if request.form['prod-switch'] == 'yes':
+      if 'prod-switch' in request.form:
         opt_create_prod = True
-      if request.form['protect-switch'] == 'yes':
+      if 'protect-switch' in request.form:
         opt_apply_p_rule = True
     else:
       containReadme = 'no'
@@ -198,7 +198,7 @@ def create_repo():
       print(log)
       # create branch production (if yes)
       if opt_create_prod:
-        log = github_action.create_branch(repo_name)
+        log = github_action.create_branch(repo_name, 'production')
         print(log)
       # apply branch protection rule (if yes)
       if opt_apply_p_rule:
@@ -226,3 +226,53 @@ def clear_all_repo():
   for repo in repos:
     github_action.api_github.delete_repo(repo)
   return redirect(url_for('tool.create_repo'))
+
+# create branch
+## main 
+@bp.route('/create_branch/', methods=('GET', 'POST'))
+@login_required
+def create_branch():
+  '''Create branch'''
+  if request.method == 'POST':
+    return redirect(url_for('tool.create_branch'))
+  auto_update()
+  g.active_side_item = 'create_branch'
+  lacking_repos = list()
+  branch = ""
+  if 'branch' in session:
+    branch = session['branch']
+  if 'lacking_repos' in session:
+    lacking_repos = session['lacking_repos']
+  return render_template('tool/create_branch.html', branch=branch, repos=lacking_repos)
+
+## create new branch for list of repo
+@bp.route('/create_branch/create', methods=('POST',))
+@login_required
+def create_spec_branch():
+  '''create branch for repo list'''
+  repos = request.form.getlist('repos[]')
+  branch = request.form['branch']
+  for repo in repos:
+    log = github_action.create_branch(repo, branch)
+    print(log)
+  find_lacking_repo(session['branch'])
+  return redirect(url_for('tool.create_branch'))
+
+# action choose branch to scan repo
+@bp.route('/scan_branch', methods=('POST',))
+@login_required
+def scan_branch():
+  if 'scanbranch-select' in request.form:
+    branch = request.form['scanbranch-select']
+    find_lacking_repo(branch)
+  else:
+    flash('[ERR] Please choose a branch!')
+  return redirect(url_for('tool.create_branch'))
+
+# find all repos that misses branch
+def find_lacking_repo(branch):
+  repos_name = [repo['name'] for repo in github_action.list_all_repos()]
+  lacking_repos = github_action.list_lacking_branch_repos(repos_name, branch)
+  print(lacking_repos)
+  session['lacking_repos'] = lacking_repos
+  session['branch'] = branch

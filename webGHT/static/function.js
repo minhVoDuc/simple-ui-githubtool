@@ -38,4 +38,57 @@ $(document).on('change', '#readme-switch', function(e) {
     $('#create-repo-addition').addClass('d-none');
   }
 })
+
+/*-------- Create Branch ---------------*/
+// select all repo
+$(document).on('click', '#cb-selectAll', function(e) {
+  $('.cb-select').prop('checked', $(this).prop("checked"));
+})
+
+// create branch
+$(document).on('click', '.btn-create-branch', function(e) {
+  var repos = [];
+  var branch = $("table").attr("data-branch");
+  console.log(branch);
+  $('.cb-select').each(function(i, obj) {
+    // console.log($('.cb-select'))
+    if ($(this).is(':checked')) {
+      repo = $(this).parent().prev("td").text()
+      repos.push(repo)
+    }
+  })  
+  // console.log(repos.length)
+  if (repos.length <= 0) {
+    $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+    <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+    [ERR] Please choose a repo!\
+    </div>")
+  }
+  else {
+    var request = $.post({
+      url: $(location).attr('href') + 'create',
+      data: {
+        branch: branch,
+        repos: repos
+      },
+      success: () => {
+        $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+        <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+        Create successfully!\
+        </div>")
+        setTimeout(function(){
+          location.reload();
+        }, 3000);
+      },
+      error: () => {
+        $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+        <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+        [ERR] Something is wrong!\
+        </div>")
+      }
+    });
+    console.log(request)
+  }
+})
+
 /*----------- Custom Display -------------*/
