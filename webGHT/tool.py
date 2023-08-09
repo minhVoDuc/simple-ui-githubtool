@@ -1,11 +1,11 @@
 from flask import (
   Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from webGHT import get_data
 from werkzeug.exceptions import abort
 from webGHT.auth import login_required
 from webGHT.db import get_db
-from webGHT.update_api_data import auto_update
+from webGHT.get_data import *
+from webGHT.update_api_data import *
 from api import github_action
 bp = Blueprint('tool', __name__)
 
@@ -16,10 +16,10 @@ def index():
   '''Display homepage'''
   if 'user_id' in session:
     org_info = dict()
-    org_info['name'] = get_data.get_org_name(session['user_id'])
-    org_info['token'] = get_data.get_token_id(session['user_id'])
-    teams = get_data.get_def_teams(session['user_id'])
-    webhook_url = get_data.get_def_webhooks(session['user_id'])
+    org_info['name'] = get_org_name(session['user_id'])
+    org_info['token'] = get_token_id(session['user_id'])
+    teams = get_def_teams(session['user_id'])
+    webhook_url = get_def_webhooks(session['user_id'])
     auto_update()
     return render_template('tool/index.html', cred=org_info, teams=teams, webhook_urls=webhook_url)
   else:
@@ -60,7 +60,7 @@ def change_orgname():
         (new_orgname, session['user_id'],)
       )
     db.commit()
-    github_action.set_org_name(new_orgname)
+    update_data('org_name')
   return redirect(url_for('index'))
   
 ## change token id
@@ -97,46 +97,9 @@ def change_tokenid():
         (new_token, session['user_id'],)
       )
     db.commit()
-    github_action.set_token(new_token)
+    update_data('token')
   return redirect(url_for('index'))  
   
-## change token id
-@bp.route('/add-def-team', methods=('POST',))
-def add_def_team():
-  '''Add to default teams'''
-  new_team = dict()
-  new_team['name'] = request.form['team-name']
-  new_team['permission'] = request.form['team-permission']
-  error = None
-  db = get_db()
-  
-  if new_team['name'] == "" or new_team['name'] is None:
-    error = '[ERR] New team name is empty!'
-  else:
-    checking = db.execute(
-      'SELECT *'
-      ' FROM org_teams'
-      ' WHERE team_name = ?',
-      (new_team['name'],)
-    ).fetchall()
-    if len(checking) > 0:
-      error = '[ERR] This team already existed!'
-    
-    if error is not None:
-      flash(error)
-    else:    
-      if new_team['permission'] not in ['pull', 'triage', 'push', 'maintain', 'admin']:
-        new_team['permission'] = 'pull'
-      org_id = get_data.get_org_id(session['user_id'])
-      db.execute(
-        'INSERT INTO org_teams'
-        ' (org_id, team_name, team_permission) VALUES (?, ?, ?)',
-        (org_id, new_team['name'], new_team['permission'])
-      )
-      db.commit()
-      github_action.set_default_team([new_team])
-  return redirect(url_for('index'))  
-
 ## add default webhooks
 @bp.route('/add-def-webhook', methods=('POST',))
 def add_def_webhook():
@@ -160,14 +123,14 @@ def add_def_webhook():
     if error is not None:
       flash(error)
     else:    
-      org_id = get_data.get_org_id(session['user_id'])
+      org_id = get_org_id(session['user_id'])
       db.execute(
         'INSERT INTO org_webhooks'
         ' (org_id, webhook_url) VALUES (?, ?)',
         (org_id, new_webhook)
       )
       db.commit()
-      github_action.set_default_webhook([new_webhook])
+      update_data('webhook')
   return redirect(url_for('index'))  
   
 # create repo
@@ -255,7 +218,7 @@ def create_spec_branch():
   for repo in repos:
     log = github_action.create_branch(repo, branch)
     print(log)
-  find_lacking_repo(session['branch'])
+  get_lacking_repo(session['branch'])
   return redirect(url_for('tool.create_branch'))
 
 # action choose branch to scan repo
@@ -264,15 +227,75 @@ def create_spec_branch():
 def scan_branch():
   if 'scanbranch-select' in request.form:
     branch = request.form['scanbranch-select']
-    find_lacking_repo(branch)
+    get_lacking_repo(branch)
   else:
     flash('[ERR] Please choose a branch!')
   return redirect(url_for('tool.create_branch'))
 
-# find all repos that misses branch
-def find_lacking_repo(branch):
-  repos_name = [repo['name'] for repo in github_action.list_all_repos()]
-  lacking_repos = github_action.list_lacking_branch_repos(repos_name, branch)
-  print(lacking_repos)
-  session['lacking_repos'] = lacking_repos
-  session['branch'] = branch
+# add team
+## main 
+@bp.route('/add_teams', methods=('GET', 'POST'))
+@login_required
+def add_teams():
+  auto_update()
+  org_name = get_org_name(session['user_id'])
+  org_teams = get_all_teams()
+  g.active_side_item = 'add_teams'
+  return render_template('tool/add_teams.html', org_name=org_name, org_teams=org_teams)
+
+## add def teams
+@bp.route('/add_teams/add-def-teams', methods=('POST',))
+@login_required
+def add_def_teams():
+  '''Add to default teams'''
+  teams = request.form.getlist('teams[]')
+  print("DEMO", request.data)
+  for new_team in teams:
+    print("DEMO", type(new_team))
+    error = None
+    db = get_db()
+    
+    checking = db.execute(
+        'SELECT *'
+        ' FROM org_teams'
+        ' WHERE team_name = ?',
+        (new_team['name'],)
+      ).fetchall()
+    if len(checking) > 0:
+      error = '[ERR] team '+new_team['name']+' already existed!'
+    
+    if error is not None:
+      flash(error)
+    else:    
+      if new_team['permission'] not in ['pull', 'triage', 'push', 'maintain', 'admin']:
+        new_team['permission'] = 'pull'
+      org_id = get_org_id(session['user_id'])
+      db.execute(
+        'INSERT INTO org_teams'
+        ' (org_id, team_name, team_permission) VALUES (?, ?, ?)',
+        (org_id, new_team['name'], new_team['permission'])
+      )
+      db.commit()
+  update_data('default_teams')
+      
+  return redirect(url_for('tool.add_teams'))  
+
+## clear all def teams
+@bp.route('/add_teams/clear_all_def_teams', methods=('POST',))
+@login_required
+def clear_all_def_teams():
+  db = get_db()
+  error = None
+  if error is not None:
+    flash(error)
+  else:
+    org_id = get_org_id(session['user_id'])
+    print(org_id)
+    db.execute(
+      'DELETE FROM org_teams'
+      ' WHERE org_id = ?',
+      (org_id,)
+    )
+    db.commit()
+  update_data('default_team')
+  return redirect(url_for('tool.add_teams'))

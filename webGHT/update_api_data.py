@@ -15,6 +15,14 @@ def auto_update():
       update_data('webhook')
 
 def update_data(part='all'):
+  '''Update environment variables for Github API.
+  Using keyword:
+  + `all`: update value for all below fields
+  + `org_name`: update organization name
+  + `token`: update personal access token
+  + `default_team`: update default teams (which would be auto added when creating new repo)
+  + `webhook`: update default webhooks urls (which would be auto added when creating new repo)
+  '''
   if part=='all' or part=='org_name':
     github_action.set_org_name(get_org_name(session['user_id']))
   if part=='all' or part=='token':

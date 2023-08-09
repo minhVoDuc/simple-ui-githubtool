@@ -1,4 +1,6 @@
 from webGHT.db import get_db
+from api.github_action import *
+from flask import session
 
 ## get org_name
 def get_org_name(user_id):
@@ -62,3 +64,32 @@ def get_def_webhooks(user_id):
   ).fetchall()
   teams = [team['webhook_url'] for team in raw_teams]
   return teams
+
+# get all repos that misses branch
+def get_lacking_repo(branch):
+  repos_name = [repo['name'] for repo in list_all_repos()]
+  lacking_repos = list_lacking_branch_repos(repos_name, branch)
+  print(lacking_repos)
+  session['lacking_repos'] = lacking_repos
+  session['branch'] = branch
+  
+# get all teams in org
+def get_all_teams():
+  raw_org_teams = list_teams("[[org]]")
+  org_teams = [
+    {
+      'name': team['name'],
+      'slug': team['slug'],
+      'parent': "" if team['parent'] is None else team['parent']['name'],
+      'permission': team['permission']
+    }
+    for team in raw_org_teams
+  ]
+  print(org_teams)
+  return org_teams
+
+# get all teams in a repo
+def get_teams(repo_name):
+  repo_teams = list_teams(repo_name)
+  print(repo_teams)
+  return repo_teams

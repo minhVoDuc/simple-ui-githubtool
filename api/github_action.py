@@ -6,7 +6,8 @@ default_branches = ['main', 'production']
 
 # relevant function
 def list_all_repos():
-    return api_github.list_all_repos()
+    repos = api_github.list_all_repos()
+    return repos
 
 ## check empty
 def is_empty_token():
@@ -31,6 +32,7 @@ def set_org_name(org_name):
     api_github.org_name = org_name
     
 def set_default_team(teams):
+    default_teams = []
     for team in teams:
         default_teams.append(
             {
@@ -40,6 +42,7 @@ def set_default_team(teams):
         )
 
 def set_default_webhook(urls):
+    webhook_urls = []
     webhook_urls.extend(urls)
 
 # 1. create repo with config
@@ -51,10 +54,8 @@ def create_a_repo(new_repo):
         msg += ' created successfully!'
     else:
         msg += ' created failed!'
-
-    # add_teams(repo_name, default_teams)
-    # create_webhooks(repo_name)
-    
+    add_teams(repo_name, default_teams)
+    create_webhooks(repo_name)
     return msg
 
 # 2. Create branch `production`
@@ -88,12 +89,8 @@ def create_branch(repo_name, branch):
 # 3. Add teams
 def list_teams(repo_name):
     if (repo_name == "[[org]]"):
-        return list([
-            team['slug']
-            for team in api_github.list_org_teams()
-        ])
-    else:
-        return api_github.list_repo_teams(repo_name)
+        return api_github.list_org_teams()
+    return api_github.list_repo_teams(repo_name)
 
 def set_teams():
     teams_num = int(input('> How many teams will be added: '))

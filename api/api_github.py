@@ -13,14 +13,16 @@ repo_visibility = ['private', 'public']
 def list_all_repos():
     url = f'https://api.github.com/orgs/{org_name}/repos'
     r = requests.get(url=url, headers=headers)
+    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+        return list()
     return list([
-        {
-            'id': repo['id'],
-            'name': repo['name'],
-            'owner': repo['owner']['login']
-        }
-        for repo in r.json()
-    ])
+            {
+                'id': repo['id'],
+                'name': repo['name'],
+                'owner': repo['owner']['login']
+            }
+            for repo in r.json()
+        ])
 
 def create_repo(new_repo):
     url = f'https://api.github.com/orgs/{org_name}/repos'
@@ -131,10 +133,14 @@ def delete_p_rule(repo_name, branch_name):
 def list_org_teams():
     url = f'https://api.github.com/orgs/{org_name}/teams'
     r = requests.get(url=url, headers=headers)
+    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+        return list()
     return list([
         {
+            'name': team['name'],
             'slug': team['slug'],
-            'parent': team['parent']
+            'parent': team['parent'],
+            'permission': team['permission']
         }
         for team in r.json()
     ])
@@ -142,6 +148,8 @@ def list_org_teams():
 def list_repo_teams(repo_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}/teams'
     r = requests.get(url=url, headers=headers)
+    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+        return list()
     return list([
         {
             'slug': team['slug'],
