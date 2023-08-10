@@ -93,8 +93,13 @@ $(document).on('click', '.btn-create-branch', function(e) {
 
 /*-------- Add Teams ---------------*/
 // select all teams
-$(document).on('click', '#at-selectAll', function(e) {
-  $('.at-select').prop('checked', $(this).prop("checked"));
+$(document).on('click', '#atr-at-selectAll', function(e) {
+  $('.atr-at-select').prop('checked', $(this).prop("checked"));
+})
+
+// select all members
+$(document).on('click', '#atr-am-selectAll', function(e) {
+  $('.atr-am-select').prop('checked', $(this).prop("checked"));
 })
 
 // clear all default teams
@@ -139,7 +144,7 @@ $(document).on('click', '.btn-add-def-teams', function(e) {
   }
   else {
     var request = $.post({
-      url: $(location).attr('href') + '/add-def-teams',
+      url: $(location).attr('href') + '/add_def_teams',
       data: {
         def_teams: teams
       },
@@ -158,6 +163,32 @@ $(document).on('click', '.btn-add-def-teams', function(e) {
     });
     console.log(request)
   }
+})
+
+$(document).on('click', '.clear-invitation', function(e) {
+  var invitation_id = $(this).parent().parent().parent().data("id")
+  var request = $.post({
+    url: $(location).attr('href') + '/clear_invitation',
+    data: {
+      invitation_id: invitation_id
+    },
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Cancel successfully!\
+      </div>")
+      setTimeout(function(){
+        location.reload();
+      }, 500);
+    },
+    error: () => {
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      [ERR] Something is wrong!\
+      </div>")
+    }
+  });
+  console.log(request)
 })
 
 /*----------- Custom Display -------------*/

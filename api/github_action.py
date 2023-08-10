@@ -45,7 +45,7 @@ def set_default_webhook(urls):
     webhook_urls = []
     webhook_urls.extend(urls)
 
-# 1. create repo with config
+# 1. Repo
 def create_a_repo(new_repo):
     repo_name = new_repo['name']
     msg = f'--> Repo {repo_name}'
@@ -58,7 +58,7 @@ def create_a_repo(new_repo):
     create_webhooks(repo_name)
     return msg
 
-# 2. Create branch `production`
+# 2. Branch
 def list_lacking_branch_repos(repos_name, branch):
     lacking_repos = list()
     for repo_name in repos_name:
@@ -86,11 +86,21 @@ def create_branch(repo_name, branch):
         else:
             return f"   |-- Error: Branch `{branch}` cannot created!"  
 
-# 3. Add teams
+# 3. Collaborator
 def list_teams(repo_name):
     if (repo_name == "[[org]]"):
         return api_github.list_org_teams()
     return api_github.list_repo_teams(repo_name)
+
+def list_members(repo_name):
+    if (repo_name == "[[org]]"):
+        return api_github.list_org_members()
+    return api_github.list_repo_members(repo_name)
+
+def list_invitations(repo_name):
+    if (repo_name == "[[org]]"):
+        return api_github.list_org_invitations()
+    return True
 
 def set_teams():
     teams_num = int(input('> How many teams will be added: '))
@@ -111,6 +121,14 @@ def add_teams(repo_name, teams):
         else:
             msg += ' failed!'
         print(msg)
+
+def invite_members(emails):
+    for email in emails:
+        api_github.invite_mem_to_org(email)
+        
+def cancel_invitations(invitation_id):
+    status_code = api_github.clear_invitation(invitation_id)
+    return status_code
 
 # 4. Modify protection branch rule
 def list_lacking_rule_repos(repos_name):

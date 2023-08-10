@@ -1,43 +1,137 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Teams{% endblock %}</h1>
+  <h1>{% block title %}Collaborator{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <h4>Current Teams in {{ org_name }}</h4>
-  <table class="table table-hover">
-    <col style="width:32%">
-    <col style="width:32%">
-    <col style="width:32%">
-    <col style="width:4%">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Team Parent</th>
-        <th>Permission</th>
-        <th>
-          <input class="form-check-input" type="checkbox" value="" id="at-selectAll" {{'checked' if org_teams|length > 0 }}>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for team in org_teams %}
-        <tr>
-          <td class="team-name">{{ team.name|e }}</td>
-          <td>{{ team.parent|e }}</td>
-          <td class="team-permission">{{ team.permission|e }}</td>
-          <td>
-            <input class="form-check-input at-select" type="checkbox" value="" checked>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% if session.permission == 'superadmin' %}
-    <div class="manage-def-teams d-flex justify-content-end gap-3">
-      <button type="button" class="btn btn-primary btn-add-def-teams">Add to Default Teams</button>
-      <button type="button" class="btn btn-danger btn-clear-def-teams">Clear Default Teams</button>
-    </div>  
-  {% endif %}
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <button class="nav-link active" id="nav-team-tab" data-bs-toggle="tab" data-bs-target="#nav-team" type="button" role="tab" aria-controls="nav-home" aria-selected="false">Teams</button>
+      <button class="nav-link" id="nav-member-tab" data-bs-toggle="tab" data-bs-target="#nav-member" type="button" role="tab" aria-controls="nav-profile" aria-selected="true">Members</button>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-team" role="tabpanel" aria-labelledby="nav-team-tab">
+      <h4>Current Teams in {{ org_name }}</h4>
+      <table class="table table-hover">
+        <col style="width:32%">
+        <col style="width:32%">
+        <col style="width:32%">
+        <col style="width:4%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Team Parent</th>
+            <th>Permission</th>
+            <th>
+              <input class="form-check-input" type="checkbox" value="" id="atr-at-selectAll" {{'checked' if org_teams|length > 0 }}>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for team in org_teams %}
+            <tr>
+              <td class="team-name">{{ team.name|e }}</td>
+              <td>{{ team.parent|e }}</td>
+              <td class="team-permission">{{ team.permission|e }}</td>
+              <td>
+                <input class="form-check-input atr-at-select" type="checkbox" value="" checked>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if session.permission == 'superadmin' %}
+        <div class="manage-teams d-flex justify-content-end gap-3">
+          <button type="button" class="btn btn-success btn-add-new-teams">Create Team</button>
+          <button type="button" class="btn btn-primary btn-add-def-teams">Add to Default Teams</button>
+          <button type="button" class="btn btn-danger btn-clear-def-teams">Clear Default Teams</button>
+        </div>  
+      {% endif %}
+      <hr>
+      <!--_____________________________________________________________________________________-->
+      <h4>Manage</h4>
+      <form method="post" class="d-flex justify-content-between align-items-center" action="/scan_repo/teams">
+        <div class="input-group">
+          <select class="form-select" id="sr-select" name="sr-select">
+            <option hidden disabled selected value>-- choose repo --</option>
+            {% for repo in repos %}
+              <option value="{{ repo.name|e }}">{{ repo.name|e }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-primary" type="submit">Scan</button>
+        </div>
+      </form>
+    </div>
+
+    <!--=======================================================================================-->
+
+    <div class="tab-pane fade" id="nav-member" role="tabpanel" aria-labelledby="nav-member-tab">
+      <h4>Current Members in {{ org_name }}</h4>
+      <table class="table table-hover">
+        <col style="width:48%">
+        <col style="width:48%">
+        <col style="width:4%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>
+              <input class="form-check-input" type="checkbox" value="" id="atr-am-selectAll" {{'checked' if org_members|length > 0 }}>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for member in org_members %}
+            <tr>
+              <td class="member.id">{{ member.id|e }}</td>
+              <td class="member.name">{{ member.name|e }}</td>
+              <td>
+                <input class="form-check-input atr-am-select" type="checkbox" value="" checked>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <hr>
+      {% if session.permission == 'superadmin' %}
+        <h5>Invitation Pending</h5> <table class="table">
+          <tr>
+            <th>Invitation ID</th>
+            <th>Email</th>
+            <th>Cancel</th>
+          </tr>
+          {% for invitation in invitations %}
+            <tr data-id="{{ invitation.id }}">
+              <td>{{ invitation.id|e }}</td>
+              <td>{{ invitation.email|e }}</td>
+              <td><button class="btn btn-danger"><i class="bi bi-x-circle-fill clear-invitation"></i></button></td>
+            </tr>
+          {% endfor %}
+        </table> 
+        <form method="post" action="collaborator/invite_member">
+          <div class="input-group mb-3">
+            <input type="text" name="invitation_email" class="form-control" placeholder="Enter email...">
+            <button type="submit" class="btn btn-primary">Invite</button>
+          </div>
+        </form>
+      {% endif %}
+      <hr>
+      <!--_____________________________________________________________________________________-->
+      <h4>Manage</h4>
+      <form method="post" class="d-flex justify-content-between align-items-center" action="/scan_repo/members">
+        <div class="input-group">
+          <select class="form-select" id="sr-select" name="sr-select">
+            <option hidden disabled selected value>-- choose repo --</option>
+            {% for repo in repos %}
+              <option value="{{ repo.name|e }}">{{ repo.name|e }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-primary" type="submit">Scan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
 {% endblock %}

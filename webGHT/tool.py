@@ -237,19 +237,28 @@ def scan_branch():
 
 # add team
 ## main 
-@bp.route('/add_teams', methods=('GET', 'POST'))
+@bp.route('/collaborator', methods=('GET',))
 @login_required
-def add_teams():
+def display_collaborator():
   auto_update()
   org_name = get_org_name(session['user_id'])
   org_teams = get_all_teams()
+  org_members = get_all_members()
+  org_invitations = get_all_invitations()
+  repos = get_all_repos()
   g.active_side_item = 'add_teams'
-  return render_template('tool/add_teams.html', org_name=org_name, org_teams=org_teams)
+  print(org_invitations)
+  return render_template('tool/add_teams.html',
+                         org_name=org_name,
+                         org_teams=org_teams,
+                         org_members=org_members,
+                         invitations=org_invitations,
+                         repos=repos)
 
 ## add def teams
-@bp.route('/add_teams/add-def-teams', methods=('POST',))
+@bp.route('/collaborator/add_def_teams', methods=('POST',))
 @login_required
-def add_def_teams():
+def add_default_teams():
   '''Add to default teams'''
   teams = request.form.getlist('teams[]')
   print("DEMO", request.data)
@@ -281,10 +290,10 @@ def add_def_teams():
       db.commit()
   update_data('default_teams')
       
-  return redirect(url_for('tool.add_teams'))  
+  return redirect(url_for('tool.display_collaborator'))  
 
 ## clear all def teams
-@bp.route('/add_teams/clear_all_def_teams', methods=('POST',))
+@bp.route('/collaborator/clear_all_def_teams', methods=('POST',))
 @login_required
 def clear_all_def_teams():
   db = get_db()
@@ -301,4 +310,25 @@ def clear_all_def_teams():
     )
     db.commit()
   update_data('default_team')
-  return redirect(url_for('tool.add_teams'))
+  return redirect(url_for('tool.display_collaborator'))
+
+## invite new member
+@bp.route('/collaborator/invite_member', methods=('POST',))
+@login_required
+def invite_member():
+  emails = request.form['invitation_email'].split(',')
+  invite_members(emails)
+  return redirect(url_for('tool.display_collaborator'))  
+
+## remove an invitation
+@bp.route('/collaborator/clear_invitation', methods=('POST',))
+@login_required
+def clear_invitation():
+  invitation_id = request.form['invitation_id']
+  status_code = cancel_invitations(invitation_id)
+  if status_code == 404:
+    flash('[ERR] Invitation not found!')
+  elif status_code == 422:
+    flash('[ERR] Cannot cancel an accepted invitation!')
+  else:
+    return redirect(url_for('tool.display_collaborator'))

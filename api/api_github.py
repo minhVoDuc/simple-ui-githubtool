@@ -145,6 +145,33 @@ def list_org_teams():
         for team in r.json()
     ])
 
+def list_org_members():
+    url = f'https://api.github.com/orgs/{org_name}/members'
+    r = requests.get(url=url, headers=headers)
+    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+        return list()
+    return list([
+        {
+            'id': member['id'],
+            'name': member['login'],
+        }
+        for member in r.json()
+    ])
+    
+def list_org_invitations():
+    url = f'https://api.github.com/orgs/{org_name}/invitations'
+    r = requests.get(url=url, headers=headers)
+    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+        return list()
+    print(r.json())
+    return list([
+        {
+            'id': invitation['id'],
+            'email': invitation['email'],
+        }
+        for invitation in r.json()
+    ])
+
 def list_repo_teams(repo_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}/teams'
     r = requests.get(url=url, headers=headers)
@@ -158,6 +185,19 @@ def list_repo_teams(repo_name):
         for team in r.json()
     ])
 
+def list_repo_members(repo_name):
+    url = f'https://api.github.com/repos/{org_name}/{repo_name}/collaborators'
+    r = requests.get(url=url, headers=headers)
+    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+        return list()
+    return list([
+        {
+            'name': member['login'],
+            'role': member['role_name']
+        }
+        for member in r.json()
+    ])
+
 def add_team_to_repo(repo_name, team):
     url = f'https://api.github.com/orgs/{org_name}/teams/{team["slug"]}/repos/{org_name}/{repo_name}'
     if (team_permission.count(team['permission']) == 0):
@@ -167,6 +207,19 @@ def add_team_to_repo(repo_name, team):
     }
     r = requests.put(url=url, headers=headers, data=json.dumps(payload))
     return r.status_code # 204: successful
+
+def invite_mem_to_org(email):
+    url = f'https://api.github.com/orgs/{org_name}/invitations'
+    payload = {
+        'email': email
+    }
+    r = requests.post(url=url, headers=headers, data=json.dumps(payload))
+    return r.status_code # 201: created
+
+def clear_invitation(invitation_id):
+    url = f'https://api.github.com/orgs/{org_name}/invitations/{invitation_id}'
+    r = requests.delete(url=url, headers=headers)
+    return r.status_code # 204
 
 # 5. Webhooks
 def create_webhook(repo_name, webhook_url):

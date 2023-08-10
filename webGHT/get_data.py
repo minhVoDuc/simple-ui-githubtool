@@ -81,6 +81,7 @@ def get_lacking_repo(branch):
   
 # get all teams in org
 def get_all_teams():
+  '''Listing all available teams in organization'''
   raw_org_teams = list_teams("[[org]]")
   org_teams = [
     {
@@ -95,13 +96,42 @@ def get_all_teams():
   return org_teams
 
 # get all teams in a repo
-def get_teams(repo_name):
+def get_teams(repo_name):  
+  '''Listing all available teams in a repo'''
   repo_teams = list_teams(repo_name)
   print(repo_teams)
   return repo_teams
 
+# get all members in organization
+def get_all_members():
+  '''Listing all members in organization'''
+  raw_org_members = list_members("[[org]]")
+  org_members = [
+    {
+      'id': member['id'],
+      'name': member['name']
+    }
+    for member in raw_org_members
+  ]
+  print(org_members)
+  return org_members
+
+# get all invitations to join org
+def get_all_invitations():
+  '''Listing all invitations'''
+  invitations = list_invitations("[[org]]")
+  return invitations
+
+# get all members in a repo
+def get_members(repo_name):  
+  '''Listing all members in a repo'''
+  repo_members = list_members(repo_name)
+  print(repo_members)
+  return repo_members
+
 ## get user info 
-def get_user(user_id):
+def get_user(user_id):  
+  '''Listing all info about a user of this tool'''
   db = get_db()
   user = db.execute(
     'SELECT *'
@@ -110,3 +140,9 @@ def get_user(user_id):
     (user_id,)
   ).fetchone()
   return user
+
+## get all repo
+def get_all_repos():
+  '''List all repos in organization'''
+  repos = list_all_repos()
+  return repos
