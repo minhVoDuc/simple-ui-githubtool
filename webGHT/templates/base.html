@@ -25,27 +25,27 @@
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
       <a href="/create_repo" class="nav-link {{'active' if g.active_side_item=='create_repo' else 'text-white'}}">
-        Create Repo
+        Repository
       </a>
     </li>
     <li>
       <a href="/create_branch" class="nav-link {{'active' if g.active_side_item=='create_branch' else 'text-white'}}">
-        Create Branch
+        Branch
       </a>
     </li>
     <li>
       <a href="/add_teams" class="nav-link {{'active' if g.active_side_item=='add_teams' else 'text-white'}}">
-        Add Teams
+        Teams
       </a>
     </li>
     <li>
       <a href="#" class="nav-link {{'active' if g.active_side_item=='add_branch_rule' else 'text-white'}}">
-        Add Branch Protection Rules
+        Branch Protection Rules
       </a>
     </li>
     <li>
       <a href="#" class="nav-link {{'active' if g.active_side_item=='create_webhook' else 'text-white'}}">
-        Create Webhooks
+        Webhooks
       </a>
     </li>
   </ul>
@@ -58,9 +58,9 @@
           <strong>{{ g.user['username'] }}</strong>
         </a>
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-          <!--<li><a class="dropdown-item" href="#">Settings</a></li>
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li><hr class="dropdown-divider"></li>-->
+          <!--<li><a class="dropdown-item" href="#">Settings</a></li>-->
+          <li><a class="dropdown-item" href="/setting/profile">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Sign out</a></li>
         </ul>
       </div>

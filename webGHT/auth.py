@@ -37,8 +37,8 @@ def register():
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    "INSERT INTO user (username, password, permission) VALUES (?, ?, ?)",
+                    (username, generate_password_hash(password), 'member'),
                 )
                 db.commit()
             except db.IntegrityError:
@@ -70,6 +70,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
+            session['user_permission'] = user['permission']
             update_data('all')
             return redirect(url_for('index'))
         

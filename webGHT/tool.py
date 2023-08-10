@@ -1,7 +1,6 @@
 from flask import (
   Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from werkzeug.exceptions import abort
 from webGHT.auth import login_required
 from webGHT.db import get_db
 from webGHT.get_data import *
@@ -14,10 +13,14 @@ bp = Blueprint('tool', __name__)
 @bp.route('/', methods=('GET', 'POST'))
 def index():  
   '''Display homepage'''
-  if 'user_id' in session:
+  if 'user_id' in session and session['user_id'] != '':
     org_info = dict()
     org_info['name'] = get_org_name(session['user_id'])
+    if (org_info['name'] is None) or (org_info['name'] == ''):
+      flash("Please insert orgname to use tools")
     org_info['token'] = get_token_id(session['user_id'])
+    if (org_info['token'] is None) or (org_info['token'] == ''):
+      flash("Please insert token to use tools")
     teams = get_def_teams(session['user_id'])
     webhook_url = get_def_webhooks(session['user_id'])
     auto_update()

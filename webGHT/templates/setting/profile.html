@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Profile{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <h5>Username</h5>
+  <span>{{ user.username|e }}</span>
+  <hr>
+  <!--_______________________________________________________________________________________-->
+  <h5>Permission</h5>
+  <div class="d-permission mb-3">
+    <span>{{ user.permission|e }} - </span>
+    {% if user.permission == 'superadmin' %}
+      <span><em>You have full control</em></span>
+    {% elif user.permission == 'projectadmin' %}
+      <span><em>You could use all tools (excluding delete and give permission)</em></span>
+    {% elif user.permission == 'member' %}
+      <span><em>You could only view</em></span>
+    {% endif %}
+  </div>  
+  <form method="post" action="profile/change_permission">
+    <div class="input-group mb-3">
+      <input type="text" name="permission" class="form-control" placeholder="Enter permission...">
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </form>
+{% endblock %}

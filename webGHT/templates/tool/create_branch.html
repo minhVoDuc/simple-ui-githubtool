@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Create Branch{% endblock %}</h1>
+  <h1>{% block title %}Branch{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <h4>Choose a branch and find repo that hasn't had it yet</h4>
+  <h4>Find repos missing selected branch</h4>
   <form method="post" class="d-flex justify-content-between align-items-center" action="/scan_branch">
     <div class="input-group">
       <select class="form-select" id="scanbranch-select" name="scanbranch-select">
@@ -50,9 +50,11 @@
     </tbody>
   </table>
   <hr>
-  {% if repos|length > 0 %}
-    <div class="text-secondary mb-3"><em>Note: Branch `{{ branch }}` would be based on branch `main`</em></div>
-    <button type="button" class="btn btn-primary btn-create-branch">Add branch</button>
+  {% if session.permission != 'member' %}
+    {% if repos|length > 0 %}
+      <div class="text-secondary mb-3"><em>Note: Branch `{{ branch }}` would be based on branch `main`</em></div>
+      <button type="button" class="btn btn-primary btn-create-branch">Add branch</button>
+    {% endif %}
   {% endif %}
   <!--__________________________________________________________________________________________-->
 {% endblock %}

@@ -11,7 +11,9 @@ def get_org_name(user_id):
     ' FROM cred'
     ' WHERE user_id = ?',
     (user_id,)
-  ).fetchone()['org_name']
+  ).fetchone()
+  if db_org_name is not None:
+    db_org_name = db_org_name['org_name']
   return db_org_name
 
 ## get curr token_id
@@ -23,7 +25,9 @@ def get_token_id(user_id):
     ' FROM cred'
     ' WHERE user_id = ?',
     (user_id,)
-  ).fetchone()['token']      
+  ).fetchone()     
+  if db_token_id is not None:
+    db_token_id = db_token_id['token']
   return db_token_id
 
 ## get org_id
@@ -35,7 +39,9 @@ def get_org_id(user_id):
     ' FROM cred'
     ' WHERE user_id = ?',
     (user_id,)
-  ).fetchone()['id']
+  ).fetchone()
+  if org_id is not None:
+    org_id = org_id['id']
   return org_id
 
 ## get default teams
@@ -93,3 +99,14 @@ def get_teams(repo_name):
   repo_teams = list_teams(repo_name)
   print(repo_teams)
   return repo_teams
+
+## get user info 
+def get_user(user_id):
+  db = get_db()
+  user = db.execute(
+    'SELECT *'
+    ' FROM user'
+    ' WHERE id = ?',
+    (user_id,)
+  ).fetchone()
+  return user

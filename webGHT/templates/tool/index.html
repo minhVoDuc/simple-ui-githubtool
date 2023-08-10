@@ -2,24 +2,33 @@
 
 {% block header %}
   <h1>{% block title %}Home{% endblock %}</h1>
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-info alert-dismissible">
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>
+      {{ message }}
+    </div>
+  {% endfor %}
 {% endblock %}
-
 {% block content %}
   {% if g.user %}
-  <form method="post" action="/change-orgname">
-    <div class="input-group mb-3">
-      <span class="input-group-text">Organization</span>
-      <input type="text" id="orgname" name="orgname" class="form-control" placeholder="{{ request.form['name'] or cred['name'] }}">
-      <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
-    </div>
-  </form>
-  <form method="post" action="/change-token">
-    <div class="input-group mb-3">
-      <span class="input-group-text">Github Token</span>
-      <input type="password" id="token" name="token" class="form-control" placeholder="{{ request.form['token'] or cred['token'] }}">
-      <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
-    </div>
-  </form>
+    {% if session.permission == 'superadmin' %}
+      <form method="post" action="/change-orgname">
+        <div class="input-group mb-3">
+          <span class="input-group-text">Organization</span>
+          <input type="text" id="orgname" name="orgname" class="form-control" placeholder="{{ request.form['name'] or cred['name'] }}">
+          <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
+        </div>
+      </form>
+      <form method="post" action="/change-token">
+        <div class="input-group mb-3">
+          <span class="input-group-text">Github Token</span>
+          <input type="password" id="token" name="token" class="form-control" placeholder="{{ request.form['token'] or cred['token'] }}">
+          <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
+        </div>
+      </form>
+    {% else %}
+      <span>Organization: {{ cred['name'] }}</span>
+    {% endif %}
   <hr>
   <!--__________________________________________________________________________________________-->
   <h4>Default Teams</h4>
@@ -47,12 +56,14 @@
         <li class="list-group-item mb-3 list-group-item-action">{{ url|e }}</li>
       {% endfor %}
     </ul>
-    <form method="post" action="/add-def-webhook">
-      <div class="input-group mb-3">
-        <input type="text" name="webhook" class="form-control" placeholder="Enter webhook URL...">
-        <button type="submit" class="btn btn-primary">Add</button>
-      </div>
-    </form>
+    {% if session.permission == 'superadmin' %}
+      <form method="post" action="/add-def-webhook">
+        <div class="input-group mb-3">
+          <input type="text" name="webhook" class="form-control" placeholder="Enter webhook URL...">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    {% endif %}
   <hr>
   {% else %}
   {% for message in get_flashed_messages() %}

@@ -6,7 +6,11 @@ DROP TABLE IF EXISTS org_webhooks;
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    permission TEXT NOT NULL
+    -- `superadmin`: full permission
+    -- `projectadmin`: full control repo (not delete)
+    -- `member`: only view 
 );
 
 CREATE TABLE cred (
