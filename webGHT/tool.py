@@ -312,6 +312,9 @@ def clear_all_def_teams():
   update_data('default_team')
   return redirect(url_for('tool.display_collaborator'))
 
+## scan teams in a repo
+@bp.route('/collaborator/scan_repo/teams', methods=('POST',))
+
 ## invite new member
 @bp.route('/collaborator/invite_member', methods=('POST',))
 @login_required
