@@ -243,17 +243,28 @@ def display_collaborator():
   auto_update()
   org_name = get_org_name(session['user_id'])
   org_teams = get_all_teams()
+  session['org_teams'] = org_teams
   org_members = get_all_members()
   org_invitations = get_all_invitations()
   repos = get_all_repos()
+  
+  repo_teams = list()
+  if 'repo_teams' in session:
+    repo_teams = session['repo_teams']
+  free_teams = list()
+  if 'free_teams' in session\
+  and 'selected_repo' in session and session['selected_repo']!="":
+    free_teams = session['free_teams']
+    
   g.active_side_item = 'add_teams'
-  print(org_invitations)
   return render_template('tool/add_teams.html',
                          org_name=org_name,
                          org_teams=org_teams,
                          org_members=org_members,
                          invitations=org_invitations,
-                         repos=repos)
+                         repos=repos,
+                         repo_teams=repo_teams,
+                         free_teams=free_teams)
 
 ## add def teams
 @bp.route('/collaborator/add_def_teams', methods=('POST',))
@@ -314,6 +325,17 @@ def clear_all_def_teams():
 
 ## scan teams in a repo
 @bp.route('/collaborator/scan_repo/teams', methods=('POST',))
+@login_required
+def scan_repo_team():
+  repo_name = request.form['sr-select']
+  session['selected_repo'] = repo_name
+  session['repo_teams'] = get_teams(repo_name)
+  session['free_teams'] = [team 
+                          for team in session['org_teams'] 
+                          if team not in session['repo_teams']]
+  print(repo_name,"-",session['repo_teams'])
+  print("available:", session['free_teams'])
+  return redirect(url_for('tool.display_collaborator'))
 
 ## invite new member
 @bp.route('/collaborator/invite_member', methods=('POST',))
@@ -335,3 +357,4 @@ def clear_invitation():
     flash('[ERR] Cannot cancel an accepted invitation!')
   else:
     return redirect(url_for('tool.display_collaborator'))
+  

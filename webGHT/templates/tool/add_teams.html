@@ -65,17 +65,23 @@
       </form>
 
       <div class="d-flex w-100 justify-content-evenly gap-3">
-        <div class="existed-team w-50 d-flex flex-column justify-content-center">
+        <div class="existed-team w-50 d-flex flex-column">
           <h5 class="text-center">Current Teams</h5>
           <table class="table">
             <tr><th class="text-center">Name</th></tr>
+            {% for team in repo_teams %}
+              <tr><td>{{ team.name|e }}<td></tr>
+            {% endfor %}
           </table>
           <button class="btn btn-primary">Remove <i class="bi bi-chevron-double-right"></i></button>
         </div>
-        <div class="free-team w-50 d-flex flex-column justify-content-center">
+        <div class="free-team w-50 d-flex flex-column">
           <h5 class="text-center">Available Teams</h5>
           <table class="table">
             <tr><th class="text-center">Name</th></tr>
+            {% for team in free_teams %}
+              <tr><td>{{ team.name|e }}</td></tr>
+            {% endfor %}
           </table>
           <button class="btn btn-primary"><i class="bi bi-chevron-double-left"></i> Add</button>
         </div>
