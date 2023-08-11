@@ -3,23 +3,25 @@
 {% block header %}
   <h1>{% block title %}Home{% endblock %}</h1>
   {% for message in get_flashed_messages() %}
-    <div class="alert alert-info alert-dismissible">
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>
-      {{ message }}
-    </div>
+    {% if not message.startswith('[INFO]') %}
+      <div class="alert alert-info alert-dismissible">
+        <button type='button' class='btn-close' data-bs-dismiss='alert'></button>
+        {{ message }}
+      </div>
+    {% endif %}
   {% endfor %}
 {% endblock %}
 {% block content %}
   {% if g.user %}
-    {% if session.permission == 'superadmin' %}
-      <form method="post" action="/change-orgname">
+    {% if session.user_permission == 'superadmin' %}
+      <form method="post" action="/change_orgname">
         <div class="input-group mb-3">
           <span class="input-group-text">Organization</span>
           <input type="text" id="orgname" name="orgname" class="form-control" placeholder="{{ request.form['name'] or cred['name'] }}">
           <input class="btn btn-success" type="submit" value="Change" onclick="return confirm('Are you sure?');"/>
         </div>
       </form>
-      <form method="post" action="/change-token">
+      <form method="post" action="/change_token">
         <div class="input-group mb-3">
           <span class="input-group-text">Github Token</span>
           <input type="password" id="token" name="token" class="form-control" placeholder="{{ request.form['token'] or cred['token'] }}">
@@ -29,47 +31,47 @@
     {% else %}
       <span>Organization: {{ cred['name'] }}</span>
     {% endif %}
-  <hr>
-  <!--__________________________________________________________________________________________-->
-  <h4>Default Teams</h4>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Team Name</th>
-          <th>Permission</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for team in teams %}
+    <hr>
+    <!--__________________________________________________________________________________________-->
+    <h4>Default Teams</h4>
+      <table class="table table-hover">
+        <thead>
           <tr>
-            <td>{{ team.team_name|e }}</td>
-            <td>{{ team.team_permission|e }}</td>
+            <th>Team Name</th>
+            <th>Permission</th>
           </tr>
+        </thead>
+        <tbody>
+          {% for team in teams %}
+            <tr>
+              <td>{{ team.team_name|e }}</td>
+              <td>{{ team.team_permission|e }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    <hr>
+    <!--__________________________________________________________________________________________-->
+    <h4>Default Webhooks</h4>
+      <ul class="list-group list-group-flush">
+        {% for url in webhook_urls %}
+          <li class="list-group-item mb-3 list-group-item-action">{{ url|e }}</li>
         {% endfor %}
-      </tbody>
-    </table>
-  <hr>
-  <!--__________________________________________________________________________________________-->
-  <h4>Default Webhooks</h4>
-    <ul class="list-group list-group-flush">
-      {% for url in webhook_urls %}
-        <li class="list-group-item mb-3 list-group-item-action">{{ url|e }}</li>
-      {% endfor %}
-    </ul>
-    {% if session.permission == 'superadmin' %}
-      <form method="post" action="/add-def-webhook">
-        <div class="input-group mb-3">
-          <input type="text" name="webhook" class="form-control" placeholder="Enter webhook URL...">
-          <button type="submit" class="btn btn-primary">Add</button>
-        </div>
-      </form>
-    {% endif %}
-  <hr>
+      </ul>
+      {% if session.user_permission == 'superadmin' %}
+        <form method="post" action="/add_def_webhook">
+          <div class="input-group mb-3">
+            <input type="text" name="webhook" class="form-control" placeholder="Enter webhook URL...">
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div>
+        </form>
+      {% endif %}
+    <hr>
   {% else %}
-  {% for message in get_flashed_messages() %}
-    <div class="alert alert-info">
-      {{ message }}
-    </div>
-  {% endfor %}
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-info">
+        {{ message }}
+      </div>
+    {% endfor %}
   {% endif %}
 {% endblock %}

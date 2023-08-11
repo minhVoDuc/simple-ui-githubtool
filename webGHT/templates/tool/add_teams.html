@@ -42,7 +42,7 @@
           {% endfor %}
         </tbody>
       </table>
-      {% if session.permission == 'superadmin' %}
+      {% if session.user_permission == 'superadmin' %}
         <div class="manage-teams d-flex justify-content-end gap-3">
           <button type="button" class="btn btn-success btn-add-new-teams">Create Team</button>
           <button type="button" class="btn btn-primary btn-add-def-teams">Add to Default Teams</button>
@@ -118,7 +118,7 @@
         </tbody>
       </table>
       <hr>
-      {% if session.permission == 'superadmin' %}
+      {% if session.user_permission == 'superadmin' %}
         <h5>Invitation Pending</h5> <table class="table">
           <tr>
             <th>Invitation ID</th>

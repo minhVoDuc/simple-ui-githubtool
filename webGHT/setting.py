@@ -47,5 +47,5 @@ def change_permision():
       (permission, user_id)
     )
     db.commit()
-    session['permission'] = permission
+    session['user_permission'] = permission
   return redirect(url_for('setting.get_profile', user_id=session['user_id']))

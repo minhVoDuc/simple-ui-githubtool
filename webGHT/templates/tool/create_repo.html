@@ -7,7 +7,7 @@
 {% block content %}
   <form method="post" class="d-flex justify-content-between align-items-center" action="/clear-all-repo">
     <span><h4 class="d-inline">Current Repo</h4></span>
-    {% if session.permission == 'superadmin' %}
+    {% if session.user_permission == 'superadmin' %}
       <button type="submit" class="btn btn-danger float-right" onclick="return confirm('Are you sure?');">Delete All</button>
     {% endif %}
   </form>
@@ -31,7 +31,7 @@
   </table>
   <hr>
   <!--__________________________________________________________________________________________-->
-  {% if session.permission != 'member' %}
+  {% if session.user_permission != 'member' %}
     <h4>Upload file json to create new repo</h4>
     <!-- Upload json file -->
     <div class="input-group mb-3">

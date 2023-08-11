@@ -26,11 +26,11 @@ def index():
     auto_update()
     return render_template('tool/index.html', cred=org_info, teams=teams, webhook_urls=webhook_url)
   else:
-    flash('Please login!')
+    flash('[INFO] Please login!')
     return render_template('tool/index.html')
 
 ## change org name
-@bp.route('/change-orgname', methods=('POST',))
+@bp.route('/change_orgname', methods=('POST',))
 def change_orgname():  
   '''Change github organization's name'''
   new_orgname = request.form['orgname']
@@ -67,7 +67,7 @@ def change_orgname():
   return redirect(url_for('index'))
   
 ## change token id
-@bp.route('/change-token', methods=('POST',))
+@bp.route('/change_token', methods=('POST',))
 def change_tokenid():
   '''Change personal access token'''
   new_token = request.form['token']
@@ -104,7 +104,7 @@ def change_tokenid():
   return redirect(url_for('index'))  
   
 ## add default webhooks
-@bp.route('/add-def-webhook', methods=('POST',))
+@bp.route('/add_def_webhook', methods=('POST',))
 def add_def_webhook():
   '''Add to default webhooks'''
   new_webhook = request.form['webhook']

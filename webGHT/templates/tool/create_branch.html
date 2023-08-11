@@ -50,7 +50,7 @@
     </tbody>
   </table>
   <hr>
-  {% if session.permission != 'member' %}
+  {% if session.user_permission != 'member' %}
     {% if repos|length > 0 %}
       <div class="text-secondary mb-3"><em>Note: Branch `{{ branch }}` would be based on branch `main`</em></div>
       <button type="button" class="btn btn-primary btn-create-branch">Add branch</button>
