@@ -243,7 +243,13 @@ def display_collaborator():
   auto_update()
   org_name = get_org_name(session['user_id'])
   org_teams = get_all_teams()
-  session['org_teams'] = org_teams
+  session['org_teams'] = [
+    {
+      'slug': team['slug'],
+      'permission': team['permission']
+    }
+    for team in org_teams
+  ]
   org_members = get_all_members()
   org_invitations = get_all_invitations()
   repos = get_all_repos()
@@ -251,9 +257,9 @@ def display_collaborator():
   repo_teams = list()
   if 'repo_teams' in session:
     repo_teams = session['repo_teams']
+  print("repo_teams:", repo_teams)
   free_teams = list()
-  if 'free_teams' in session\
-  and 'selected_repo' in session and session['selected_repo']!="":
+  if 'free_teams' in session:
     free_teams = session['free_teams']
     
   g.active_side_item = 'add_teams'
@@ -328,13 +334,11 @@ def clear_all_def_teams():
 @login_required
 def scan_repo_team():
   repo_name = request.form['sr-select']
-  session['selected_repo'] = repo_name
   session['repo_teams'] = get_teams(repo_name)
-  session['free_teams'] = [team 
-                          for team in session['org_teams'] 
-                          if team not in session['repo_teams']]
-  print(repo_name,"-",session['repo_teams'])
-  print("available:", session['free_teams'])
+  repo_teams_name = [team['slug'] for team in session['repo_teams']]
+  print("org teams:",session['org_teams'])
+  session['free_teams'] = [team for team in session['org_teams'] 
+                          if team['slug'] not in repo_teams_name]
   return redirect(url_for('tool.display_collaborator'))
 
 ## invite new member

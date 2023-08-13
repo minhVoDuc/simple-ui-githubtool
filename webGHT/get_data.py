@@ -92,14 +92,12 @@ def get_all_teams():
     }
     for team in raw_org_teams
   ]
-  print(org_teams)
   return org_teams
 
 # get all teams in a repo
 def get_teams(repo_name):  
   '''Listing all available teams in a repo'''
   repo_teams = list_teams(repo_name)
-  print(repo_teams)
   return repo_teams
 
 # get all members in organization
@@ -113,7 +111,6 @@ def get_all_members():
     }
     for member in raw_org_members
   ]
-  print(org_members)
   return org_members
 
 # get all invitations to join org
