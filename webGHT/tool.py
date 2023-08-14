@@ -245,7 +245,7 @@ def create_repo():
   repos = github_action.list_all_repos()
   print(repos)
   g.active_side_item = 'create_repo'
-  return render_template('tool/create_repo.html', repos=repos)
+  return render_template('tool/repos.html', repos=repos)
 
 ## delete repo
 @bp.route('/clear_all_repo', methods=('POST',))
@@ -273,7 +273,7 @@ def create_branch():
     branch = session['branch']
   if 'lacking_repos' in session:
     lacking_repos = session['lacking_repos']
-  return render_template('tool/create_branch.html', branch=branch, repos=lacking_repos)
+  return render_template('tool/branches.html', branch=branch, repos=lacking_repos)
 
 ## create new branch for list of repo
 @bp.route('/branch/create', methods=('POST',))
@@ -327,7 +327,7 @@ def display_collaborator():
     free_teams = session['free_teams']
     
   g.active_side_item = 'add_teams'
-  return render_template('tool/add_teams.html',
+  return render_template('tool/collaborators.html',
                          org_name=org_name,
                          org_teams=org_teams,
                          org_members=org_members,
