@@ -1,4 +1,49 @@
 const error_pattern = /(<p>)(.+)(<\/p>)/
+/*-------- Indexing -----------------*/
+// clear all default teams
+$(document).on('click', '.btn-clear-def-teams', function(e) {
+  var request = $.post({
+    url: $(location).attr('href') + '/clear_all_def_teams',
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Clear successfully!\
+      </div>")
+    },
+    error: () => {
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      [ERR] Something is wrong!\
+      </div>")
+    }
+  });
+  console.log(request)
+})
+
+// add to default teams
+$(document).on('click', '.btn-add-def-team', function(e) {
+  var team = $("#index_teamlist :selected").val()
+  var request = $.post({
+    url: $(location).attr('href') + '/add_def_team',
+    data: {
+      team: team
+    },
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Added successfully!\
+      </div>")
+    },
+    error: () => {
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      [ERR] Something is wrong!\
+      </div>")
+    }
+  });
+  console.log(request)
+})
+
 /*-------- Create Repo ---------------*/
 // get file 
 var jsonList
@@ -13,7 +58,7 @@ $(document).on('change', '.add-repolist', function(event) {
   reader.readAsText(event.target.files[0]);
 });
 
-// append to form
+// append to text area
 $(document).on('click', '.btn-upload-jsonlist', function(e) {
   for (var i=0; i<jsonList.length; i++){
     console.log(jsonList.length)
@@ -101,69 +146,6 @@ $(document).on('click', '#atr-at-selectAll', function(e) {
 // select all members
 $(document).on('click', '#atr-am-selectAll', function(e) {
   $('.atr-am-select').prop('checked', $(this).prop("checked"));
-})
-
-// clear all default teams
-$(document).on('click', '.btn-clear-def-teams', function(e) {
-  var request = $.post({
-    url: $(location).attr('href') + '/clear_all_def_teams',
-    success: () => {
-      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
-      Clear successfully!\
-      </div>")
-    },
-    error: () => {
-      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
-      [ERR] Something is wrong!\
-      </div>")
-    }
-  });
-  console.log(request)
-})
-
-// add to default teams
-$(document).on('click', '.btn-add-def-teams', function(e) {
-  var teams = [];
-  $('.at-select').each(function(i, obj) {
-    // console.log($('.cb-select'))
-    if ($(this).is(':checked')) {
-      var team = {
-        'name': $(this).parent().siblings('.team-name').text(),
-        'permission': $(this).parent().siblings('.team-permission').text()
-      }
-      console.log(team)
-      teams.push(team)
-    }
-  })  
-  if (teams.length <= 0) {
-    $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
-    <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
-    [ERR] Please choose a team!\
-    </div>")
-  }
-  else {
-    var request = $.post({
-      url: $(location).attr('href') + '/add_def_teams',
-      data: {
-        def_teams: teams
-      },
-      success: () => {
-        $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-        <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
-        Added successfully!\
-        </div>")
-      },
-      error: () => {
-        $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
-        <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
-        [ERR] Something is wrong!\
-        </div>")
-      }
-    });
-    console.log(request)
-  }
 })
 
 $(document).on('click', '.clear-invitation', function(e) {

@@ -23,8 +23,21 @@ def index():
       flash("Please insert token to use tools")
     teams = get_def_teams(session['user_id'])
     webhook_url = get_def_webhooks(session['user_id'])
+    org_teams = get_all_teams()
+    free_teams = [
+      {
+        'name': team['name'],
+        'slug': team['slug']
+      }
+      for team in org_teams
+      if team['slug'] not in teams
+    ]
     auto_update()
-    return render_template('tool/index.html', cred=org_info, teams=teams, webhook_urls=webhook_url)
+    return render_template('tool/index.html',
+                           cred=org_info,
+                           teams=teams,
+                           org_teams=free_teams,
+                           webhook_urls=webhook_url)
   else:
     flash('[INFO] Please login!')
     return render_template('tool/index.html')
@@ -102,6 +115,58 @@ def change_tokenid():
     db.commit()
     update_data('token')
   return redirect(url_for('index'))  
+  
+## add def teams
+@bp.route('/add_def_team', methods=('POST',))
+@login_required
+def add_default_team():
+  '''Add to default teams'''
+  team_name = request.form['team']
+  error = None
+  db = get_db()
+  
+  checking = db.execute(
+      'SELECT *'
+      ' FROM org_teams'
+      ' WHERE team_name = ?',
+      (team_name,)
+    ).fetchall()
+  if len(checking) > 0:
+    error = '[ERR] team '+team_name+' already existed!'
+  
+  if error is not None:
+    flash(error)
+  else:    
+    org_id = get_org_id(session['user_id'])
+    db.execute(
+      'INSERT INTO org_teams'
+      ' (org_id, team_name) VALUES (?, ?)',
+      (org_id, team_name)
+    )
+    db.commit()
+  update_data('default_teams')
+      
+  return redirect(url_for('tool.display_collaborator'))  
+
+## clear all def teams
+@bp.route('/clear_all_def_teams', methods=('POST',))
+@login_required
+def clear_all_def_teams():
+  db = get_db()
+  error = None
+  if error is not None:
+    flash(error)
+  else:
+    org_id = get_org_id(session['user_id'])
+    print(org_id)
+    db.execute(
+      'DELETE FROM org_teams'
+      ' WHERE org_id = ?',
+      (org_id,)
+    )
+    db.commit()
+  update_data('default_team')
+  return redirect(url_for('tool.display_collaborator'))  
   
 ## add default webhooks
 @bp.route('/add_def_webhook', methods=('POST',))
@@ -271,63 +336,6 @@ def display_collaborator():
                          repos=repos,
                          repo_teams=repo_teams,
                          free_teams=free_teams)
-
-## add def teams
-@bp.route('/collaborator/add_def_teams', methods=('POST',))
-@login_required
-def add_default_teams():
-  '''Add to default teams'''
-  teams = request.form.getlist('teams[]')
-  print("DEMO", request.data)
-  for new_team in teams:
-    print("DEMO", type(new_team))
-    error = None
-    db = get_db()
-    
-    checking = db.execute(
-        'SELECT *'
-        ' FROM org_teams'
-        ' WHERE team_name = ?',
-        (new_team['name'],)
-      ).fetchall()
-    if len(checking) > 0:
-      error = '[ERR] team '+new_team['name']+' already existed!'
-    
-    if error is not None:
-      flash(error)
-    else:    
-      if new_team['permission'] not in ['pull', 'triage', 'push', 'maintain', 'admin']:
-        new_team['permission'] = 'pull'
-      org_id = get_org_id(session['user_id'])
-      db.execute(
-        'INSERT INTO org_teams'
-        ' (org_id, team_name, team_permission) VALUES (?, ?, ?)',
-        (org_id, new_team['name'], new_team['permission'])
-      )
-      db.commit()
-  update_data('default_teams')
-      
-  return redirect(url_for('tool.display_collaborator'))  
-
-## clear all def teams
-@bp.route('/collaborator/clear_all_def_teams', methods=('POST',))
-@login_required
-def clear_all_def_teams():
-  db = get_db()
-  error = None
-  if error is not None:
-    flash(error)
-  else:
-    org_id = get_org_id(session['user_id'])
-    print(org_id)
-    db.execute(
-      'DELETE FROM org_teams'
-      ' WHERE org_id = ?',
-      (org_id,)
-    )
-    db.commit()
-  update_data('default_team')
-  return redirect(url_for('tool.display_collaborator'))
 
 ## scan teams in a repo
 @bp.route('/collaborator/scan_repo/teams', methods=('POST',))

@@ -25,7 +25,6 @@ CREATE TABLE org_teams (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     org_id INTEGER NOT NULL,
     team_name TEXT UNIQUE,
-    team_permission TEXT,
     FOREIGN KEY (org_id) REFERENCES cred (id)
 );
 

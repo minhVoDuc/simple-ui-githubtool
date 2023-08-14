@@ -49,7 +49,21 @@
             </tr>
           {% endfor %}
         </tbody>
-      </table>
+      </table>      
+      {% if session.user_permission == 'superadmin' %}
+        <div class="manage-teams d-flex justify-content-end gap-3">
+          <div class="input-group">
+            <select class="form-select" id="index_teamlist">
+              <option hidden disabled selected value>Choose...</option>
+              {% for team in org_teams %}
+                <option value="{{ team.slug|e }}">{{ team.name|e }}</option>
+              {% endfor %}
+            </select>            
+            <button type="button" class="btn btn-primary btn-add-def-team">Add</button>
+          </div>
+          <button type="button" class="btn btn-danger btn-clear-def-teams">Clear Teams</button>
+        </div>  
+      {% endif %}
     <hr>
     <!--__________________________________________________________________________________________-->
     <h4>Default Webhooks</h4>
