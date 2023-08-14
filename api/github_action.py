@@ -37,7 +37,7 @@ def set_default_team(teams):
         default_teams.append(
             {
                 'slug': team['team_name'],
-                'permission': team['team_permission']
+                'permission': 'pull'
             }
         )
 

@@ -22,6 +22,7 @@ def index():
     if (org_info['token'] is None) or (org_info['token'] == ''):
       flash("Please insert token to use tools")
     teams = get_def_teams(session['user_id'])
+    team_name = [team['team_name'] for team in teams]
     webhook_url = get_def_webhooks(session['user_id'])
     org_teams = get_all_teams()
     free_teams = [
@@ -30,7 +31,7 @@ def index():
         'slug': team['slug']
       }
       for team in org_teams
-      if team['slug'] not in teams
+      if team['slug'] not in team_name
     ]
     auto_update()
     return render_template('tool/index.html',
@@ -146,7 +147,7 @@ def add_default_team():
     db.commit()
   update_data('default_teams')
       
-  return redirect(url_for('tool.display_collaborator'))  
+  return redirect(url_for('index'))  
 
 ## clear all def teams
 @bp.route('/clear_all_def_teams', methods=('POST',))
@@ -166,7 +167,7 @@ def clear_all_def_teams():
     )
     db.commit()
   update_data('default_team')
-  return redirect(url_for('tool.display_collaborator'))  
+  return redirect(url_for('index'))  
   
 ## add default webhooks
 @bp.route('/add_def_webhook', methods=('POST',))

@@ -5,10 +5,12 @@ $(document).on('click', '.btn-clear-def-teams', function(e) {
   var request = $.post({
     url: $(location).attr('href') + '/clear_all_def_teams',
     success: () => {
-      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      $(".alert-msg").append("<div class='alert alert-info'>\
       Clear successfully!\
       </div>")
+      setTimeout(function(){
+        location.reload();
+      }, 500);
     },
     error: () => {
       $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
@@ -29,10 +31,12 @@ $(document).on('click', '.btn-add-def-team', function(e) {
       team: team
     },
     success: () => {
-      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      $(".alert-msg").append("<div class='alert alert-info'>\
       Added successfully!\
       </div>")
+      setTimeout(function(){
+        location.reload();
+      }, 500);
     },
     error: () => {
       $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
@@ -118,8 +122,7 @@ $(document).on('click', '.btn-create-branch', function(e) {
         repos: repos
       },
       success: () => {
-        $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-        <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+        $(".alert-msg").append("<div class='alert alert-info'>\
         Create successfully!\
         </div>")
         setTimeout(function(){
@@ -156,8 +159,7 @@ $(document).on('click', '.clear-invitation', function(e) {
       invitation_id: invitation_id
     },
     success: () => {
-      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      $(".alert-msg").append("<div class='alert alert-info'>\
       Cancel successfully!\
       </div>")
       setTimeout(function(){
@@ -207,8 +209,7 @@ $(document).on('click', '.btn-rmv-team-repo', function(e) {
       selected_teams: selected_teams
     },
     success: () => {
-      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      $(".alert-msg").append("<div class='alert alert-info'>\
       Remove successfully!\
       </div>")
       setTimeout(function(){
@@ -242,8 +243,7 @@ $(document).on('click', '.btn-add-team-repo', function(e) {
       permission: permissions
     },
     success: () => {
-      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
-      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      $(".alert-msg").append("<div class='alert alert-info'>\
       Add successfully!\
       </div>")
       setTimeout(function(){
