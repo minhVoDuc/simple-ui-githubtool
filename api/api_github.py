@@ -12,8 +12,8 @@ repo_visibility = ['private', 'public']
 # 1. Repo
 def list_all_repos():
     url = f'https://api.github.com/orgs/{org_name}/repos'
-    r = requests.get(url=url, headers=headers)
-    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+    r = requests.get(url=url, headers=headers)    
+    if 'message' in r.json().keys():
         return list()
     return list([
             {
@@ -45,12 +45,14 @@ def delete_repo(repo_name):
 def list_all_branches(repo_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}/branches'
     r = requests.get(url=url, headers=headers)
+    if 'message' in r.json().keys():
+        return list()
     return list([repo['name'] for repo in r.json()])
 
 def find_revision(repo_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}/git/refs/heads'
-    r = requests.get(url=url, headers=headers)
-    if ('message' in r.json()):
+    r = requests.get(url=url, headers=headers)    
+    if 'message' in r.json().keys():
         return "REPO_EMPTY"        
     else:
         data = r.json()[0]
@@ -97,6 +99,8 @@ def create_branch(repo_name, branch_name, revision_id):
 def get_branch(repo_name, branch_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}/branches/{branch_name}'
     r = requests.get(url=url, headers=headers)
+    if 'message' in r.json().keys():
+        return "ERROR"
     return r.status_code # 404: not found
 
 def delete_branch(repo_name, branch_name):
@@ -108,6 +112,8 @@ def delete_branch(repo_name, branch_name):
 def get_p_rule(repo_name, branch_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}]/branches/{branch_name}/protection'
     r = requests.get(url=url, headers=headers)
+    if 'message' in r.json().keys():
+        return "ERROR"
     return r.status_code # 404: not found
 
 def apply_p_rule(repo_name, branch_name):
@@ -133,7 +139,7 @@ def delete_p_rule(repo_name, branch_name):
 def list_org_teams():
     url = f'https://api.github.com/orgs/{org_name}/teams'
     r = requests.get(url=url, headers=headers)
-    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+    if 'message' in r.json().keys():
         return list()
     return list([
         {
@@ -148,7 +154,7 @@ def list_org_teams():
 def list_org_members():
     url = f'https://api.github.com/orgs/{org_name}/members'
     r = requests.get(url=url, headers=headers)
-    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+    if 'message' in r.json().keys():
         return list()
     return list([
         {
@@ -160,8 +166,8 @@ def list_org_members():
     
 def list_org_invitations():
     url = f'https://api.github.com/orgs/{org_name}/invitations'
-    r = requests.get(url=url, headers=headers)
-    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+    r = requests.get(url=url, headers=headers)    
+    if 'message' in r.json().keys():
         return list()
     print(r.json())
     return list([
@@ -174,8 +180,8 @@ def list_org_invitations():
 
 def list_repo_teams(repo_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}/teams'
-    r = requests.get(url=url, headers=headers)
-    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+    r = requests.get(url=url, headers=headers)    
+    if 'message' in r.json().keys():
         return list()
     return list([
         {
@@ -187,8 +193,8 @@ def list_repo_teams(repo_name):
 
 def list_repo_members(repo_name):
     url = f'https://api.github.com/repos/{org_name}/{repo_name}/collaborators'
-    r = requests.get(url=url, headers=headers)
-    if 'message' in r.json() and r.json()['message'] == 'Not Found':
+    r = requests.get(url=url, headers=headers)    
+    if 'message' in r.json().keys():
         return list()
     return list([
         {
