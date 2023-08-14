@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-  <h4>Find repos missing selected branch</h4>
+  <h4>Find repos missing `{{ branch }}`</h4>
   <form method="post" class="d-flex justify-content-between align-items-center" action="/scan_branch">
     <div class="input-group">
       <select class="form-select" id="scanbranch-select" name="scanbranch-select">
@@ -18,7 +18,6 @@
     </div>
   </form>
   <table class="table table-hover caption-top" data-branch="{{ branch }}">
-    <caption><strong>Branch {{ branch }}</strong></caption>
     <col style="width:47%">
     <col style="width:47%">
     <col style="width:6%">
