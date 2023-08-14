@@ -204,7 +204,7 @@ def add_def_webhook():
   
 # create repo
 ## main 
-@bp.route('/create_repo', methods=('GET', 'POST'))
+@bp.route('/repo', methods=('GET', 'POST'))
 @login_required
 def create_repo():
   '''Create repo'''
@@ -261,12 +261,10 @@ def clear_all_repo():
 
 # create branch
 ## main 
-@bp.route('/create_branch/', methods=('GET', 'POST'))
+@bp.route('/branch/')
 @login_required
 def create_branch():
   '''Create branch'''
-  if request.method == 'POST':
-    return redirect(url_for('tool.create_branch'))
   auto_update()
   g.active_side_item = 'create_branch'
   lacking_repos = list()
@@ -278,7 +276,7 @@ def create_branch():
   return render_template('tool/create_branch.html', branch=branch, repos=lacking_repos)
 
 ## create new branch for list of repo
-@bp.route('/create_branch/create', methods=('POST',))
+@bp.route('/branch/create', methods=('POST',))
 @login_required
 def create_spec_branch():
   '''create branch for repo list'''

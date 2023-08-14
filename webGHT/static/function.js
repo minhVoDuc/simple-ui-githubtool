@@ -127,7 +127,7 @@ $(document).on('click', '.btn-create-branch', function(e) {
         </div>")
         setTimeout(function(){
           location.reload();
-        }, 3000);
+        }, 1000);
       },
       error: () => {
         $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
