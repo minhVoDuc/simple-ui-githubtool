@@ -1,5 +1,5 @@
 from flask import (
-  Blueprint, flash, g, redirect, render_template, request, session, url_for
+  Blueprint, flash, jsonify, g, redirect, render_template, request, session, url_for, abort
 )
 from webGHT.auth import login_required
 from webGHT.db import get_db
@@ -182,7 +182,7 @@ def create_repo():
   return render_template('tool/create_repo.html', repos=repos)
 
 ## delete repo
-@bp.route('/clear-all-repo', methods=('POST',))
+@bp.route('/clear_all_repo', methods=('POST',))
 def clear_all_repo():
   '''Clear All Existed Repo'''
   raw_repos = github_action.list_all_repos()
@@ -334,11 +334,54 @@ def clear_all_def_teams():
 @login_required
 def scan_repo_team():
   repo_name = request.form['sr-select']
+  session['repo_name'] = repo_name
   session['repo_teams'] = get_teams(repo_name)
   repo_teams_name = [team['slug'] for team in session['repo_teams']]
   print("org teams:",session['org_teams'])
   session['free_teams'] = [team for team in session['org_teams'] 
                           if team['slug'] not in repo_teams_name]
+  return redirect(url_for('tool.display_collaborator'))
+
+## add teams to a repo
+@bp.route('/collaborator/add_repo_teams', methods=('POST',))
+@login_required
+def add_repo_teams():
+  teams = request.form.getlist('selected_teams[]')
+  permissions = request.form.getlist('permission[]')
+  team_list = [
+    {
+      'slug': team,
+      'permission': permission
+    }
+    for team, permission in zip(teams, permissions)
+  ]
+  if len(team_list) == 0:
+    abort(400, description="[ERR] Please choose at least one team!")
+  error = github_action.add_teams(session['repo_name'], team_list)
+  if error is not None:
+    abort(400, description="[ERR] Could not add team to "+session['repo_name']+"!")
+  tmp = session['free_teams']
+  session['free_teams'] = [team for team in tmp
+                           if team['slug'] not in teams]
+  session['repo_teams'].extend([team for team in tmp
+                                if team['slug'] in teams])
+  return redirect(url_for('tool.display_collaborator'))
+
+## remove teams in a repo
+@bp.route('/collaborator/remove_repo_teams', methods=('POST',))
+@login_required
+def remove_repo_teams():
+  teams = request.form.getlist('selected_teams[]')
+  if len(teams) == 0:
+    abort(400, description="[ERR] Please choose at least one team!")
+  error = github_action.remove_teams(session['repo_name'], teams)
+  if error is not None:
+    abort(400, description="[ERR] Could not remove team!")
+  tmp = session['repo_teams']
+  session['repo_teams'] = [team for team in tmp
+                           if team['slug'] not in teams]
+  session['free_teams'].extend([team for team in tmp
+                                if team['slug'] in teams])
   return redirect(url_for('tool.display_collaborator'))
 
 ## invite new member

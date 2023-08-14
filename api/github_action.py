@@ -114,13 +114,17 @@ def set_teams():
 
 def add_teams(repo_name, teams):
     for team in teams:
-        msg = f'   |-- Add team {team["slug"]} as {team["permission"]}'
         status_code = api_github.add_team_to_repo(repo_name, team)
-        if (status_code == 204):
-            msg += ' successful!'
-        else:
-            msg += ' failed!'
-        print(msg)
+        if status_code != 204:
+            return "Error"
+    return None
+        
+def remove_teams(repo_name, teams):
+    for team_name in teams:
+        status_code = api_github.delete_team_from_repo(repo_name, team_name)
+        if status_code != 204:
+            return "Error"
+    return None
 
 def invite_members(emails):
     for email in emails:

@@ -208,6 +208,11 @@ def add_team_to_repo(repo_name, team):
     r = requests.put(url=url, headers=headers, data=json.dumps(payload))
     return r.status_code # 204: successful
 
+def delete_team_from_repo(repo_name, team_slug):
+    url = f'https://api.github.com/orgs/{org_name}/teams/{team_slug}/repos/{org_name}/{repo_name}'
+    r = requests.delete(url=url, headers=headers)
+    return r.status_code # 204: delete success
+
 def invite_mem_to_org(email):
     url = f'https://api.github.com/orgs/{org_name}/invitations'
     payload = {

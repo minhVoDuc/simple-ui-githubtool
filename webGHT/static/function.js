@@ -1,3 +1,4 @@
+const error_pattern = /(<p>)(.+)(<\/p>)/
 /*-------- Create Repo ---------------*/
 // get file 
 var jsonList
@@ -91,7 +92,7 @@ $(document).on('click', '.btn-create-branch', function(e) {
   }
 })
 
-/*-------- Add Teams ---------------*/
+/*-------- Collaborator ---------------*/
 // select all teams
 $(document).on('click', '#atr-at-selectAll', function(e) {
   $('.atr-at-select').prop('checked', $(this).prop("checked"));
@@ -191,4 +192,91 @@ $(document).on('click', '.clear-invitation', function(e) {
   console.log(request)
 })
 
+// select team in a repo
+$(document).on('click', '.repo_team tbody tr', function(e) {
+  console.log("team slug: "+$(this).data('slug'))
+  if ($(this).hasClass('table-active')){
+    $(this).removeClass('table-active')
+  }
+  else {
+    $(this).addClass('table-active');
+  }
+});
+
+// get selected team
+function get_selected_teams(table) {
+  selected_teams = []
+  table.children("tbody").children().each(function() {
+    if ($(this).hasClass("table-active")) {
+      selected_teams.push($(this).data("slug"))
+    }
+  })
+  console.log(selected_teams)
+  return selected_teams
+}
+
+// remove teams from repo
+$(document).on('click', '.btn-rmv-team-repo', function(e) {
+  var table = $(this).siblings("table")
+  var selected_teams = get_selected_teams(table)
+  var request = $.post({
+    url: $(location).attr('href') + '/remove_repo_teams',
+    data: {
+      selected_teams: selected_teams
+    },
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Remove successfully!\
+      </div>")
+      setTimeout(function(){
+        location.reload();
+      }, 500);
+    },
+    error: (msg) => {
+      error_msg = msg.responseText.match(error_pattern)[2]
+      console.log(error_msg)
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      "+error_msg+"\
+      </div>")
+    }
+  });
+  console.log(request)
+});
+
+// add teams to repo
+$(document).on('click', '.btn-add-team-repo', function(e) {
+  var table = $(this).siblings("table")
+  var selected_teams = get_selected_teams(table)
+  var permissions = []
+  for (var i=0; i<selected_teams.length; i++) {
+    permissions.push('pull')
+  }
+  var request = $.post({
+    url: $(location).attr('href') + '/add_repo_teams',
+    data: {
+      selected_teams: selected_teams,
+      permission: permissions
+    },
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Add successfully!\
+      </div>")
+      setTimeout(function(){
+        location.reload();
+      }, 500);
+    },
+    error: (msg) => {
+      error_msg = msg.responseText.match(error_pattern)[2]
+      console.log(error_msg)
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      "+error_msg+"\
+      </div>")
+    }
+  });
+  console.log(request)  
+});
 /*----------- Custom Display -------------*/
