@@ -23,7 +23,7 @@
             <th>Name</th>
             <th>Team Parent</th>
             <th>
-              <input class="form-check-input" type="checkbox" value="" id="atr-at-selectAll" {{'checked' if org_teams|length > 0 }}>
+              <input class="form-check-input selectAll" type="checkbox" value="" {{'checked' if org_teams|length > 0 }}>
             </th>
           </tr>
         </thead>
@@ -33,7 +33,7 @@
               <td class="team-name">{{ team.name|e }}</td>
               <td>{{ team.parent|e }}</td>
               <td>
-                <input class="form-check-input atr-at-select" type="checkbox" value="" checked>
+                <input class="form-check-input selectItem" type="checkbox" value="" checked>
               </td>
             </tr>
           {% endfor %}
@@ -114,7 +114,7 @@
             <th>ID</th>
             <th>Name</th>
             <th>
-              <input class="form-check-input" type="checkbox" value="" id="atr-am-selectAll" {{'checked' if org_members|length > 0 }}>
+              <input class="form-check-input selectAll" type="checkbox" value="" {{'checked' if org_members|length > 0 }}>
             </th>
           </tr>
         </thead>
@@ -124,7 +124,7 @@
               <td class="member.id">{{ member.id|e }}</td>
               <td class="member.name">{{ member.name|e }}</td>
               <td>
-                <input class="form-check-input atr-am-select" type="checkbox" value="" checked>
+                <input class="form-check-input selectItem" type="checkbox" value="" checked>
               </td>
             </tr>
           {% endfor %}

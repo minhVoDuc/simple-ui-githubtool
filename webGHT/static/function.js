@@ -1,4 +1,11 @@
 const error_pattern = /(<p>)(.+)(<\/p>)/
+
+$(document).on('click', 'th .selectAll', function(e) {
+  var trs = $(this).parents("table").children("tbody").children("tr");
+  console.log(trs.children("td").children(".selectItem"))
+  trs.children("td").children(".selectItem").prop('checked', $(this).prop("checked"));
+})
+
 /*-------- Indexing -----------------*/
 // clear all default teams
 $(document).on('click', '.btn-clear-def-teams', function(e) {
@@ -90,11 +97,6 @@ $(document).on('change', '#readme-switch', function(e) {
 })
 
 /*-------- Create Branch ---------------*/
-// select all repo
-$(document).on('click', '#cb-selectAll', function(e) {
-  $('.cb-select').prop('checked', $(this).prop("checked"));
-})
-
 // create branch
 $(document).on('click', '.btn-create-branch', function(e) {
   var repos = [];
@@ -141,16 +143,6 @@ $(document).on('click', '.btn-create-branch', function(e) {
 })
 
 /*-------- Collaborator ---------------*/
-// select all teams
-$(document).on('click', '#atr-at-selectAll', function(e) {
-  $('.atr-at-select').prop('checked', $(this).prop("checked"));
-})
-
-// select all members
-$(document).on('click', '#atr-am-selectAll', function(e) {
-  $('.atr-am-select').prop('checked', $(this).prop("checked"));
-})
-
 $(document).on('click', '.clear-invitation', function(e) {
   var invitation_id = $(this).parent().parent().parent().data("id")
   var request = $.post({
