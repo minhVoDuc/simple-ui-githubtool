@@ -253,4 +253,85 @@ $(document).on('click', '.btn-add-team-repo', function(e) {
   });
   console.log(request)  
 });
+
+/*----------- Branch protection rule ---------*/
+function get_branches(button) {
+  var branches = [];
+  // add branches
+  var map = button.siblings("div.choose-branch");
+  map.children(".form-check-inline").children("input").each(function() {
+    if ($(this).is(":checked")) {
+      branches.push($(this).val())
+    }
+  });
+  return branches;
+}
+
+function get_repos(button) {
+  var repos = [];
+  // add repo
+  var map = button.siblings("div.choose-repo").children("table").children("tbody")
+  map.children("tr").each(function(e) {
+    if ($(this).children("td").children("input.selectItem").is(":checked")) {
+      repos.push($(this).children(".itemName").text())
+    }
+  })
+  return repos;
+}
+
+// add branch protection rule
+$(document).on('click', '.btn-add-protection', function(e) {
+  var branches = get_branches($(this)),
+      repos = get_repos($(this));
+  // console.log("Branches: "+branches+"\nRepos: "+repos)
+  $.post({
+    url: $(location).attr('href') + 'add_protection',
+    data: {
+      branches: branches,
+      repos: repos
+    },
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Add successfully!\
+      </div>")
+    },
+    error: (msg) => {
+      error_msg = msg.responseText.match(error_pattern)[2]
+      console.log(error_msg)
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      "+error_msg+"\
+      </div>")
+    }
+  });
+});
+
+// remove branch protection rule
+$(document).on('click', '.btn-rm-protection', function(e) {
+  var branches = get_branches($(this)),
+      repos = get_repos($(this));
+  // console.log("Branches: "+branches+"\nRepos: "+repos)
+  $.post({
+    url: $(location).attr('href') + 'rm_protection',
+    data: {
+      branches: branches,
+      repos: repos
+    },
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Remove successfully!\
+      </div>")
+    },
+    error: (msg) => {
+      error_msg = msg.responseText.match(error_pattern)[2]
+      console.log(error_msg)
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      "+error_msg+"\
+      </div>")
+    }
+  });
+});
 /*----------- Custom Display -------------*/

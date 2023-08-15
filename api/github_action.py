@@ -156,18 +156,24 @@ def list_lacking_rule_repos(repos_name):
             )
     return lacking_repos
 
-def apply_branch_rule(repo):
-    repo_name = repo['name']
-    branches = repo['branches']
+def apply_branch_rule(repo_name, branches):
+    # repo_name = repo['name']
+    # branches = repo['branches']
     # branches = ['main', 'production']
     for branch in branches:
-        msg = f'   |--`{branch}`: updated '
         status_code = api_github.apply_p_rule(repo_name, branch)
-        if (status_code == 200):
-            msg += 'successfully!'
-        else:
-            msg += 'failed!'
-        print(msg)
+        print(status_code)
+        if status_code != 200:
+            return f"[ERR] Cannot apply branch protection rule to {repo_name}!"
+    return None
+
+def delete_branch_rule(repo_name, branches):
+    for branch in branches:
+        status_code = api_github.delete_p_rule(repo_name, branch)
+        print(status_code)
+        if status_code != 204:
+            return f"[ERR] Cannot apply branch protection rule to {repo_name}!"
+    return None
 
 # 5. Create webhooks for repo
 def create_webhooks(repo_name):

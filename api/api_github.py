@@ -131,7 +131,7 @@ def apply_p_rule(repo_name, branch_name):
     return r.status_code
 
 def delete_p_rule(repo_name, branch_name):
-    url = f'https://api.github.com/repos/{org_name}/{repo_name}]/branches/{branch_name}/protection'
+    url = f'https://api.github.com/repos/{org_name}/{repo_name}/branches/{branch_name}/protection'
     r = requests.delete(url=url, headers=headers)
     return r.status_code # 204: successful
 

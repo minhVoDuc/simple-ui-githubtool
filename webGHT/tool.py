@@ -424,6 +424,42 @@ def display_protection():
   return render_template('tool/branch_rules.html',
                          repos=repos)
 
+## add protection rule
+@bp.route('/protection/add_protection', methods=('POST',))
+@login_required
+def add_protection():
+  branches = request.form.getlist('branches[]')
+  repos = request.form.getlist('repos[]')
+  if len(branches) == 0:    
+    abort(400, description="[ERR] Please choose at least one branch!")
+  if len(repos) == 0:    
+    abort(400, description="[ERR] Please choose at least one repo!")
+  
+  for repo in repos:
+    error = apply_branch_rule(repo, branches)
+    if error is not None:
+      flash(error)
+  
+  return redirect(url_for('tool.display_protection'))
+
+## rm protection rule
+@bp.route('/protection/rm_protection', methods=('POST',))
+@login_required
+def rm_protection():
+  branches = request.form.getlist('branches[]')
+  repos = request.form.getlist('repos[]')
+  if len(branches) == 0:    
+    abort(400, description="[ERR] Please choose at least one branch!")
+  if len(repos) == 0:    
+    abort(400, description="[ERR] Please choose at least one repo!")
+  
+  for repo in repos:
+    error = delete_branch_rule(repo, branches)
+    if error is not None:
+      flash(error)
+  
+  return redirect(url_for('tool.display_protection'))
+
 # Webhook
 ## display
 @bp.route('/webhook/')
