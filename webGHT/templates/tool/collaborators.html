@@ -76,7 +76,9 @@
               </tr>
             {% endfor %}
           </table>
-          <button class="btn btn-primary btn-rmv-team-repo">Remove <i class="bi bi-chevron-double-right"></i></button>
+          {% if session.user_permission != 'member' %}
+            <button class="btn btn-primary btn-rmv-team-repo">Remove <i class="bi bi-chevron-double-right"></i></button>
+          {% endif %}
         </div>
         <div class="free-team w-50 d-flex flex-column">
           <h5 class="text-center">Available Teams</h5>
@@ -92,7 +94,9 @@
               </tr>
             {% endfor %}
           </table>
-          <button class="btn btn-primary btn-add-team-repo"><i class="bi bi-chevron-double-left"></i> Add</button>
+          {% if session.user_permission != 'member' %}
+            <button class="btn btn-primary btn-add-team-repo"><i class="bi bi-chevron-double-left"></i> Add</button>
+          {% endif %}
         </div>
       </div>
     </div>
