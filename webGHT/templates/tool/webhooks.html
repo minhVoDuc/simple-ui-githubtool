@@ -5,5 +5,10 @@
 {% endblock %}
 
 {% block content %}
-
+  {% if session.user_permission != 'member' %}
+    <h5 class="d-inline">Create default webhooks for all repos?</h5>
+    <button class="btn btn-primary btn-create-webhook">Yes</button>
+  {% else %}
+    <h5>You cannot view this!</h5>
+  {% endif %}
 {% endblock %}
