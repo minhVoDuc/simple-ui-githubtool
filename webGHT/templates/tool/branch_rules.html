@@ -5,5 +5,45 @@
 {% endblock %}
 
 {% block content %}
-
+  <h4>Apply branch protection rules</h4>
+  <div class="choose-branch">    
+    <h6 class="d-inline" style="margin-right: 1%;">Choose branch   </h6>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="checkbox" id="cbp-main" value="main">
+      <label class="form-check-label" for="cbp-main">main</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="checkbox" id="cbp-prod" value="production">
+      <label class="form-check-label" for="cbp-prod">production</label>
+    </div>
+  </div>
+  <div class="choose-repo">    
+    <h6 style="margin-right: 1%;">Choose repo   </h6>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>
+            <input class="form-check-input selectAll" type="checkbox" value="" {{'checked' if repos|length > 0 }}>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if repos|length > 0 %}
+          {% for repo in repos %}
+            <tr>
+              <td>{{ repo.name|e }}</td>
+              <td>
+                <input class="form-check-input selectItem" type="checkbox" value="" checked>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+            <tr>
+              <td colspan="2" class="text-center text-secondary no-hover" disabled>None</td>
+            </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

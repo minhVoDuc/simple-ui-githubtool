@@ -417,13 +417,18 @@ def clear_invitation():
 @bp.route('/protection/')
 @login_required
 def display_protection():
+  auto_update()
+  repos = get_all_repos()
+  print(repos)
   g.active_side_item = 'protection'
-  return render_template('tool/branch_rules.html')
+  return render_template('tool/branch_rules.html',
+                         repos=repos)
 
 # Webhook
 ## display
 @bp.route('/webhook/')
 @login_required
 def display_webhook():
+  auto_update()
   g.active_side_item = 'webhook'
   return render_template('tool/webhooks.html') 
