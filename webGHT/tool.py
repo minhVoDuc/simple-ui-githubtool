@@ -419,7 +419,6 @@ def clear_invitation():
 def display_protection():
   auto_update()
   repos = get_all_repos()
-  print(repos)
   g.active_side_item = 'protection'
   return render_template('tool/branch_rules.html',
                          repos=repos)
@@ -465,6 +464,20 @@ def rm_protection():
 @bp.route('/webhook/')
 @login_required
 def display_webhook():
-  auto_update()
   g.active_side_item = 'webhook'
   return render_template('tool/webhooks.html') 
+
+## create webhook
+@bp.route('/webhook/create', methods=('POST',))
+@login_required
+def create_webhook():  
+  auto_update()
+  repos = get_all_repos()
+  webhook_urls = get_def_webhooks(session['user_id'])
+  print(repos)
+  for repo in repos:
+    for url in webhook_urls:
+      error = create_repo_webhook(repo['name'], url)
+      if error is not None: 
+        flash(error)
+  return redirect(url_for('tool.display_webhook'))

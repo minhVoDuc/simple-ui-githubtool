@@ -42,8 +42,8 @@ def set_default_team(teams):
         )
 
 def set_default_webhook(urls):
-    webhook_urls = []
-    webhook_urls.extend(urls)
+    webhook_urls = urls
+    print("updating", webhook_urls)
 
 # 1. Repo
 def create_a_repo(new_repo):
@@ -54,8 +54,6 @@ def create_a_repo(new_repo):
         msg += ' created successfully!'
     else:
         msg += ' created failed!'
-    add_teams(repo_name, default_teams)
-    create_webhooks(repo_name)
     return msg
 
 # 2. Branch
@@ -176,12 +174,8 @@ def delete_branch_rule(repo_name, branches):
     return None
 
 # 5. Create webhooks for repo
-def create_webhooks(repo_name):
-    for url in webhook_urls:
-        msg = f'   |--`{url}`: created '
-        status_code = api_github.create_webhook(repo_name, url)
-        if (status_code == 201):
-            msg += 'successfully!'
-        else:
-            msg += 'failed!'
-        print(msg)
+def create_repo_webhook(repo_name, url):
+    status_code = api_github.create_webhook(repo_name, url)
+    if status_code != 201:
+        return "ERROR"    
+    return None

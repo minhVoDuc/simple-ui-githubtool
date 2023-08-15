@@ -334,4 +334,24 @@ $(document).on('click', '.btn-rm-protection', function(e) {
     }
   });
 });
-/*----------- Custom Display -------------*/
+
+/*----------- Webhooks -------------*/
+$(document).on('click', '.btn-create-webhook', function(e) {
+  $.post({
+    url: $(location).attr('href') + 'create',
+    success: () => {
+      $(".alert-msg").append("<div class='alert alert-info alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      Create successfully!\
+      </div>")
+    },
+    error: (msg) => {
+      error_msg = msg.responseText.match(error_pattern)[2]
+      console.log(error_msg)
+      $(".alert-msg").append("<div class='alert alert-danger alert-dismissible'>\
+      <button type='button' class='btn-close' data-bs-dismiss='alert'></button>\
+      "+error_msg+"\
+      </div>")
+    }
+  });
+});
