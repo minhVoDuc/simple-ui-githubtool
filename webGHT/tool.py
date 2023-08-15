@@ -8,7 +8,7 @@ from webGHT.update_api_data import *
 from api import github_action
 bp = Blueprint('tool', __name__)
 
-# view tools
+# View tools
 ## view home
 @bp.route('/', methods=('GET', 'POST'))
 def index():  
@@ -202,7 +202,7 @@ def add_def_webhook():
       update_data('webhook')
   return redirect(url_for('index'))  
   
-# create repo
+# Repo
 ## main 
 @bp.route('/repo', methods=('GET', 'POST'))
 @login_required
@@ -244,7 +244,7 @@ def create_repo():
   auto_update()
   repos = github_action.list_all_repos()
   print(repos)
-  g.active_side_item = 'create_repo'
+  g.active_side_item = 'repo'
   return render_template('tool/repos.html', repos=repos)
 
 ## delete repo
@@ -259,14 +259,14 @@ def clear_all_repo():
     github_action.api_github.delete_repo(repo)
   return redirect(url_for('tool.create_repo'))
 
-# create branch
+# Branch
 ## main 
 @bp.route('/branch/')
 @login_required
 def create_branch():
   '''Create branch'''
   auto_update()
-  g.active_side_item = 'create_branch'
+  g.active_side_item = 'branch'
   lacking_repos = list()
   branch = ""
   if 'branch' in session:
@@ -288,7 +288,7 @@ def create_spec_branch():
   get_lacking_repo(session['branch'])
   return redirect(url_for('tool.create_branch'))
 
-# action choose branch to scan repo
+## choose branch to scan repo
 @bp.route('/scan_branch', methods=('POST',))
 @login_required
 def scan_branch():
@@ -326,7 +326,7 @@ def display_collaborator():
   if 'free_teams' in session:
     free_teams = session['free_teams']
     
-  g.active_side_item = 'add_teams'
+  g.active_side_item = 'collaborator'
   return render_template('tool/collaborators.html',
                          org_name=org_name,
                          org_teams=org_teams,
@@ -412,3 +412,18 @@ def clear_invitation():
   else:
     return redirect(url_for('tool.display_collaborator'))
   
+# Protection
+## display
+@bp.route('/protection/')
+@login_required
+def display_protection():
+  g.active_side_item = 'protection'
+  return render_template('tool/branch_rules.html')
+
+# Webhook
+## display
+@bp.route('/webhook/')
+@login_required
+def display_webhook():
+  g.active_side_item = 'webhook'
+  return render_template('tool/webhooks.html') 
