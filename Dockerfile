@@ -7,6 +7,6 @@ RUN mkdir /app
 COPY . /app
 
 WORKDIR /app
-RUN pip install -e .
+RUN pip install --no-cache-dir -r requirements.txt
 
 CMD ["flask", "--app", "webGHT", "run"]
