@@ -2,3 +2,6 @@ Flask
 requests
 build
 waitress
+pymongo[srv]
+Flask-PyMongo
+bson

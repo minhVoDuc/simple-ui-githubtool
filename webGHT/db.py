@@ -1,36 +1,26 @@
-import sqlite3
+import bson
 
-import click 
 from flask import current_app, g
+from werkzeug.local import LocalProxy
+from flask_pymongo import PyMongo
+
+from pymongo.errors import DuplicateKeyError, OperationFailure
+from bson.objectid import ObjectId
+from bson.errors import InvalidId
+
 
 def get_db():
-    if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
-    return g.db
+    """
+    Configuration method to return db instance
+    """
+    db = getattr(g, "_database", None)
 
-def close_db(e=None):
-    db = g.pop('db', None)
+    if db is None:
 
-    if db is not None:
-        db.close()
+        db = g._database = PyMongo(current_app).db
+       
+    return db
 
-def init_db():
-    db = get_db()
 
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf-8'))
-
-@click.command('init-db')
-def init_db_command():
-    """Clear the existing data and create new tables."""
-    init_db()
-    click.echo('Initialized the database.')
-
-def init_app(app):
-    app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)
-    
+# Use LocalProxy to read the global db instance with just `db`
+db = LocalProxy(get_db)
